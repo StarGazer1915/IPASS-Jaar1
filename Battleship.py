@@ -37,7 +37,7 @@ def showField():
     pass
 
 
-def CheckShellChoice():
+def checkShellChoice():
     pass
 
 

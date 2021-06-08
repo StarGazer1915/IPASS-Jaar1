@@ -75,8 +75,7 @@ def placeShip(row, col, direction, length):
             return False
         end_row = row + length
 
-
-    pass
+    return checkValidShipPlacement(start_row, end_row, start_col, end_col)
 
 
 def checkShellChoice():

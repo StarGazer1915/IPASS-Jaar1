@@ -35,20 +35,20 @@ def checkValidShipPlacement(row_start, row_end, col_start, col_end):
     global battlefield
     global ship_positions
 
-    viable_positions = True
+    positions_are_viable = True
     for row in range(row_start, row_end):
         for col in range(col_start,col_end):
-            if battlefield[row][col] != '.':
-                viable_positions = False
+            if battlefield[row][col] != '0':
+                positions_are_viable = False
                 break
 
-    if viable_positions == True:
+    if positions_are_viable == True:
         ship_positions.append([row_start, row_end, col_start, col_end])
         for row in range(row_start, row_end):
             for col in range(col_start, col_end):
+                battlefield[row][col] = 'S'
 
-
-    pass
+    return positions_are_viable
 
 
 def placeShip(row, col, direction, length):

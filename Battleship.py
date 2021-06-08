@@ -100,7 +100,6 @@ def runGame():
     This function runs the game.
     """
     ShowBoardGame()
-    showField()
     pass
 
 

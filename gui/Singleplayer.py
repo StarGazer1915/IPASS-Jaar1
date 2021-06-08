@@ -41,19 +41,40 @@ class ShowSingleplayer:
 
         self.setupboard.mainloop()
 
+
+    def invalidWindow(self):
+        self.invalidboard = Tk()
+        self.invalidboard.title("Invalid Entry")
+        self.invalidboard.geometry("350x200")
+        self.invalidboard.configure(background=self.bg)
+        self.invalidboard.resizable(0, 0)
+
+        self.label1 = Label(self.invalidboard, text="\nInvalid Entry", font=("Arial 20 bold"))
+        self.label1.configure(background=self.bg, foreground=self.fg)
+        self.label1.pack()
+
+        self.label1 = Label(self.invalidboard, text="\nThis is not a valid size!\nPick a number between 4 and 26.\n", font=("Arial 14 bold"))
+        self.label1.configure(background=self.bg, foreground=self.fg)
+        self.label1.pack()
+
+        self.button = Button(self.invalidboard, text="Ok", font=("Arial bold", 14))
+        self.button.configure(height="2", width="8", command=self.invalidboard.destroy, highlightbackground=self.bg, foreground=self.bg)
+        self.button.pack()
+
+        self.invalidboard.mainloop()
+
+
     def setupCheck(self):
         size = self.SetupEntry.get()
         try:
             size = int(size)
             if size > 26 or size < 4:
-                print("This is not a valid size, pick a number between 4 and 26.")
+                self.invalidWindow()
             else:
-                pass
+                self.setupboard.destroy()
+                self.showSingleplayer()
         except:
-            print("Size is not an integer.")
-
-
-        pass
+            self.invalidWindow()
 
 
     def showSingleplayer(self):

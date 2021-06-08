@@ -1,6 +1,6 @@
 from tkinter import *
 from gui.Grid import ShowFieldWindow
-
+import json
 
 class ShowSingleplayer:
     # ====== Visual Vars ====== #
@@ -71,6 +71,12 @@ class ShowSingleplayer:
             if size > 26 or size < 4:
                 self.invalidWindow()
             else:
+                data = {}
+                data['fieldsize'] = size
+                with open('gui/game.json', 'w') as file:
+                    json.dump(data, file)
+                    file.close()
+
                 self.setupboard.destroy()
                 self.showSingleplayer()
         except:

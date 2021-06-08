@@ -31,7 +31,23 @@ def showField():
     return
 
 
-def checkValidShipPlacement(start_row, end_row, start_col, end_col):
+def checkValidShipPlacement(row_start, row_end, col_start, col_end):
+    global battlefield
+    global ship_positions
+
+    viable_positions = True
+    for row in range(row_start, row_end):
+        for col in range(col_start,col_end):
+            if battlefield[row][col] != '.':
+                viable_positions = False
+                break
+
+    if viable_positions == True:
+        ship_positions.append([row_start, row_end, col_start, col_end])
+        for row in range(row_start, row_end):
+            for col in range(col_start, col_end):
+
+
     pass
 
 

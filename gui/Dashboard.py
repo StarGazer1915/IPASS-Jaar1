@@ -1,5 +1,6 @@
 from tkinter import *
 from gui.Grid import ShowFieldWindow
+from gui.Singleplayer import ShowSingleplayer
 
 class ShowBoardGame:
     # ====== Visual Vars ====== #
@@ -9,7 +10,6 @@ class ShowBoardGame:
 
     def __init__(self):
         self.showDash()
-
 
     def showDash(self):
         self.dashboard = Tk()
@@ -31,7 +31,7 @@ class ShowBoardGame:
         self.label3.pack()
 
         self.button = Button(self.dashboard, text="SINGLEPLAYER", font=("Arial bold", 14))
-        self.button.configure(height="2", width="28", command=ShowFieldWindow, highlightbackground=self.bg, foreground=self.bg)
+        self.button.configure(height="2", width="28", command=ShowSingleplayer, highlightbackground=self.bg, foreground=self.bg)
         self.button.pack()
 
         self.button1 = Button(self.dashboard, text="GAME VS AI", font=("Arial bold", 14))
@@ -39,11 +39,3 @@ class ShowBoardGame:
         self.button1.pack()
 
         self.dashboard.mainloop()
-
-    def showSingleplayerBoard(self):
-        self.fieldboard = Tk()
-        self.fieldboard.title("Battleship - Singplayer Board")
-        self.fieldboard.configure(background=self.bg)
-        self.fieldboard.resizable(0,0)
-
-        self.fieldboard.mainloop()

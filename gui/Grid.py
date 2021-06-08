@@ -64,6 +64,3 @@ class ShowFieldWindow:
                 item.grid(row=row, column=col, sticky=W)
                 col += 1
             row += 1
-
-
-

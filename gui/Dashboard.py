@@ -34,7 +34,7 @@ class ShowBoardGame:
         self.button.configure(height="2", width="28", command=ShowSingleplayer, highlightbackground=self.bg, foreground=self.bg)
         self.button.pack()
 
-        self.button1 = Button(self.dashboard, text="GAME VS AI", font=("Arial bold", 14))
+        self.button1 = Button(self.dashboard, text="PLAY AGAINST AI", font=("Arial bold", 14))
         self.button1.configure(height="2", width="28", highlightbackground=self.bg, foreground=self.bg)
         self.button1.pack()
 

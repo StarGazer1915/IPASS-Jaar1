@@ -1,5 +1,6 @@
 from tkinter import *
 from gui.Grid import ShowFieldWindow
+import time
 
 class ShowSingleplayer:
     # ====== Visual Vars ====== #
@@ -13,7 +14,7 @@ class ShowSingleplayer:
     def showSingleplayer(self):
         self.singleboard = Tk()
         self.singleboard.title("Battleship - Singleplayer Board")
-        self.singleboard.geometry("650x500")
+        self.singleboard.geometry("850x600")
         self.singleboard.configure(background=self.bg)
         self.singleboard.resizable(0, 0)
 
@@ -46,7 +47,7 @@ class ShowSingleplayer:
         self.whiteline3.pack()
 
         self.button = Button(self.singleboard, text="Fire!", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command="", highlightbackground=self.bg, foreground=self.bg)
+        self.button.configure(height="2", width="8", command=self.FireShell, highlightbackground=self.bg, foreground=self.bg)
         self.button.pack()
 
         self.whiteline4 = Label(self.singleboard, font=("Arial 10 bold"))
@@ -58,9 +59,34 @@ class ShowSingleplayer:
         self.label2.pack()
 
         self.textdash = Text(self.singleboard, font=("Arial bold", 16))
-        self.textdash.config(height="11", width="40", background=self.bg, foreground="White", highlightbackground="grey")
+        self.textdash.config(height="16", width="80", background=self.bg, foreground="White", highlightbackground="grey")
         self.textdash.tag_configure("center", justify='center')
         self.textdash.tag_add("center", 1.0, "end")
         self.textdash.pack()
 
         self.singleboard.mainloop()
+
+    def FireShell(self):
+        self.textdash.configure(state=NORMAL)
+        self.textdash.delete('1.0', END)
+
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        position = self.entry.get()
+
+        if position[0] not in alphabet or position[1] in alphabet or len(position) > 2:
+            self.textdash.insert(END, "That is not a valid coordinate, try again!")
+        else:
+            self.textdash.insert(END, f"Fired shell at: {position}\n\n")
+            self.textdash.insert(END, f"You hit an enemy ship!")
+
+        self.textdash.configure(state=DISABLED)
+        return
+
+    def checkIfHit(self):
+        pass
+
+    def insertResult(self):
+        pass
+
+    def SingleplayerGame(self):
+        pass

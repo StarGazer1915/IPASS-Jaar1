@@ -4,11 +4,11 @@ class ShowBoardGame:
     # ====== Visual Vars ====== #
     bg = "#0033cc"
     fg = "#ffffff"
-    # ==== Functional Vars ==== #
-    #...
+    # ========================= #
 
     def __init__(self):
         self.showDash()
+
 
     def showDash(self):
         self.dashboard = Tk()
@@ -30,7 +30,7 @@ class ShowBoardGame:
         self.label3.pack()
 
         self.button = Button(self.dashboard, text="SINGLEPLAYER", font=("Arial bold", 14))
-        self.button.configure(height="2", width="28", command=self.showSingleplayer, highlightbackground=self.bg, foreground=self.bg)
+        self.button.configure(height="2", width="28", command=self.showGrid, highlightbackground=self.bg, foreground=self.bg)
         self.button.pack()
 
         self.button1 = Button(self.dashboard, text="GAME VS AI", font=("Arial bold", 14))
@@ -39,25 +39,25 @@ class ShowBoardGame:
 
         self.dashboard.mainloop()
 
-    def showSingleplayer(self):
-        field_size = 10
 
-        self.singleplayer = Tk()
-        self.singleplayer.title("Battleship - Singleplayer")
-        #self.singleplayer.geometry("650x400")
-        self.singleplayer.configure(background=self.bg)
-
+    def showGrid(self):
+        self.fieldboard = Tk()
+        self.fieldboard.title("Battleship - Field")
+        self.fieldboard.configure(background=self.bg)
+        self.fieldboard.resizable(0,0)
         self.createGrid()
 
-        self.singleplayer.mainloop()
+        self.fieldboard.mainloop()
+
 
     def createGrid(self):
         field_size = 10
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+        battlefield = []
         for r in range(field_size):
             row = []
-            row.append(Label(self.singleplayer,
+            row.append(Label(self.fieldboard,
                              text=f"{alphabet[r]}",
                              font=("Arial", 10),
                              height="2",
@@ -66,17 +66,36 @@ class ShowBoardGame:
                              background=self.bg,
                              foreground=self.fg))
 
-            for c in range(field_size):
-                row.append(Button(self.singleplayer,
-                                  text=f"{alphabet[r]}{c}",
+            for c in range(1,field_size):
+                row.append(Label(self.fieldboard,
                                   font=("Arial", 10),
                                   height="2",
                                   width="5",
-                                  highlightbackground=self.bg,
+                                  relief=RAISED,
                                   foreground=self.bg))
-                
-            for item in range(field_size+1):
-                row[item].grid(row=r, column= item, sticky=W)
+
+            battlefield.append(row)
+
+        row = []
+        for item in range(0,field_size):
+            row.append(Label(self.fieldboard,
+                             text=f"{item}",
+                             font=("Arial", 10),
+                             height="2",
+                             width="5",
+                             borderwidth=2,
+                             background=self.bg,
+                             foreground=self.fg))
+
+        battlefield.append(row)
+
+        row = 0
+        for list in battlefield:
+            col = 0
+            for item in list:
+                item.grid(row=row, column=col, sticky=W)
+                col += 1
+            row += 1
 
 
 

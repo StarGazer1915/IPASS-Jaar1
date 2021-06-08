@@ -1,6 +1,6 @@
 from tkinter import *
 from gui.Grid import ShowFieldWindow
-import time
+
 
 class ShowSingleplayer:
     # ====== Visual Vars ====== #
@@ -9,7 +9,52 @@ class ShowSingleplayer:
     # ========================= #
 
     def __init__(self):
-        self.showSingleplayer()
+        #self.showSingleplayer()
+        self.showSetup()
+
+    def showSetup(self):
+        self.setupboard = Tk()
+        self.setupboard.title("Battleship - Singleplayer Board")
+        self.setupboard.geometry("350x200")
+        self.setupboard.configure(background=self.bg)
+        self.setupboard.resizable(0, 0)
+
+        self.label1 = Label(self.setupboard, text="\nInsert battlefield size:", font=("Arial 20 bold"))
+        self.label1.configure(background=self.bg, foreground=self.fg)
+        self.label1.pack()
+
+        self.whiteline = Label(self.setupboard, font=("Arial 10 bold"))
+        self.whiteline.configure(background=self.bg, foreground=self.fg)
+        self.whiteline.pack()
+
+        self.SetupEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.SetupEntry.configure(highlightbackground=self.bg)
+        self.SetupEntry.pack()
+
+        self.whiteline3 = Label(self.setupboard, font=("Arial bold", 10))
+        self.whiteline3.configure(background=self.bg, foreground=self.fg)
+        self.whiteline3.pack()
+
+        self.button = Button(self.setupboard, text="Start", font=("Arial bold", 14))
+        self.button.configure(height="2", width="8", command=self.setupCheck, highlightbackground=self.bg, foreground=self.bg)
+        self.button.pack()
+
+        self.setupboard.mainloop()
+
+    def setupCheck(self):
+        size = self.SetupEntry.get()
+        try:
+            size = int(size)
+            if size > 26 or size < 4:
+                print("This is not a valid size, pick a number between 4 and 26.")
+            else:
+                pass
+        except:
+            print("Size is not an integer.")
+
+
+        pass
+
 
     def showSingleplayer(self):
         self.singleboard = Tk()
@@ -66,6 +111,7 @@ class ShowSingleplayer:
 
         self.singleboard.mainloop()
 
+
     def FireShell(self):
         self.textdash.configure(state=NORMAL)
         self.textdash.delete('1.0', END)
@@ -73,7 +119,7 @@ class ShowSingleplayer:
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         position = self.entry.get()
 
-        if position[0] not in alphabet or position[1] in alphabet or len(position) > 2:
+        if position[0] not in alphabet or position[1] in alphabet or len(position) > 2 or len(position) <= 1:
             self.textdash.insert(END, "That is not a valid coordinate, try again!")
         else:
             self.textdash.insert(END, f"Fired shell at: {position}\n\n")

@@ -8,12 +8,12 @@ class ShowBoardGame:
     #...
 
     def __init__(self):
-        self.showGame()
+        self.showDash()
 
-    def showGame(self):
+    def showDash(self):
         self.dashboard = Tk()
         self.dashboard.title("Battleship")
-        self.dashboard.geometry("1200x600")
+        self.dashboard.geometry("650x400")
         self.dashboard.configure(background=self.bg)
         self.dashboard.resizable(0, 0)
 
@@ -25,26 +25,16 @@ class ShowBoardGame:
         self.label2.configure(background=self.bg, foreground=self.fg)
         self.label2.pack()
 
-        self.textdash = Text(self.dashboard, font=("Arial", 16))
-        self.textdash.config(height="22", width="80", background=self.bg, foreground="White",highlightbackground="grey")
-        self.textdash.tag_configure("center", justify='center')
-        self.textdash.tag_add("center", 1.0, "end")
-        self.textdash.pack()
-        self.displayField()
+        self.label3 = Label(self.dashboard, text="====== Options: ======\n", font=("Arial 16 bold"))
+        self.label3.configure(background=self.bg, foreground=self.fg)
+        self.label3.pack()
+
+        self.button = Button(self.dashboard, text="SINGLEPLAYER", font=("Arial bold", 14))
+        self.button.configure(height="2", width="28", highlightbackground=self.bg, foreground=self.bg)
+        self.button.pack()
+
+        self.button1 = Button(self.dashboard, text="GAME VS AI", font=("Arial bold", 14))
+        self.button1.configure(height="2", width="28", highlightbackground=self.bg, foreground=self.bg)
+        self.button1.pack()
 
         self.dashboard.mainloop()
-
-    def displayField(self):
-        field_size = 10
-
-        field = []
-        for row in range(field_size):
-            newrow = []
-            for col in range(field_size):
-                newrow.append(" O ")
-            field.append(newrow)
-
-        for i in field:
-            self.textdash.insert(END, f'{i}\n')
-
-        return

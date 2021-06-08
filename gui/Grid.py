@@ -1,4 +1,5 @@
 from tkinter import *
+import json
 
 class ShowFieldWindow:
     # ====== Visual Vars ====== #
@@ -19,7 +20,12 @@ class ShowFieldWindow:
         self.fieldboard.mainloop()
 
     def createField(self):
-        field_size = 10 # Cannot be more than alphabet length (26) !!!
+        with open('gui/game.json', 'r') as file:
+            data = json.load(file)
+            field_size = data['fieldsize']
+            print(field_size)
+            file.close()
+
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
         battlefield = []

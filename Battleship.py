@@ -7,6 +7,7 @@
 
 
 # ============ IMPORTS ============ #
+from gui.Dashboard import ShowBoardGame
 import random
 
 
@@ -98,6 +99,7 @@ def runGame():
     """
     This function runs the game.
     """
+    ShowBoardGame()
     showField()
     pass
 

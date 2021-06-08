@@ -23,7 +23,6 @@ class ShowFieldWindow:
         with open('gui/game.json', 'r') as file:
             data = json.load(file)
             field_size = data['fieldsize']
-            print(field_size)
             file.close()
 
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -40,7 +39,7 @@ class ShowFieldWindow:
                              background=self.bg,
                              foreground=self.fg))
 
-            for c in range(1,field_size):
+            for c in range(1,field_size+1):
                 row.append(Label(self.fieldboard,
                                   font=("Arial", 10),
                                   height="2",
@@ -51,7 +50,7 @@ class ShowFieldWindow:
             battlefield.append(row)
 
         row = []
-        for item in range(0,field_size):
+        for item in range(0,field_size+1):
             row.append(Label(self.fieldboard,
                              text=f"{item}",
                              font=("Arial", 10),

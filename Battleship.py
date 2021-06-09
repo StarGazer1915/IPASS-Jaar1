@@ -110,7 +110,20 @@ def fireShell():
 
 
 def checkShipDestroyed(row, col):
-    pass
+    global ship_positions
+    global battlefield
+
+    for position in ship_positions:
+        row_start = position[0]
+        row_end = position[1]
+        col_start = position[2]
+        col_end = position[3]
+        if row_start <= row <= row_end and col_start <= col <= col_end:
+            for r in range(row_start, row_end):
+                for c in range(col_start, col_end):
+                    if battlefield[r][c] != "X":
+                        return False
+    return True
 
 
 def checkGameOver():

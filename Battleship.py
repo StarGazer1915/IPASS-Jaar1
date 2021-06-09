@@ -82,8 +82,24 @@ def checkPlaceShip(row, col, direction, length):
     return checkValidShipPlacement(row_start, row_end, col_start, col_end)
 
 
-def placeShip():
-    pass
+def placeShips():
+    global field_size
+    global ship_positions
+    global num_ships
+
+    rows, cols = (field_size, field_size)
+    ships_placed = 0
+
+    ship_positions = []
+
+    while ships_placed != num_ships:
+        random_row = random.randint(0, rows - 1)
+        random_col = random.randint(0, cols - 1)
+        direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
+        ship_size = random.randint(2, 5)
+        if checkPlaceShip(random_row, random_col, direction, ship_size):
+            ships_placed += 1
+
 
 def checkShellShot():
     pass

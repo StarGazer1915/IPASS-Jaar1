@@ -7,7 +7,6 @@
 
 
 # ============ IMPORTS ============ #
-from gui.Dashboard import ShowBoardGame
 import random
 
 
@@ -139,16 +138,16 @@ def fireShell():
     row, col = checkShellShot()
 
     if battlefield[row][col] == ".":
-        print("\nYou missed, no ship was shot\n")
+        print("\nYou didn't hit anything, try again!\n")
         battlefield[row][col] = "#"
     elif battlefield[row][col] == "O":
-        print("\nYou hit!")
+        print("\nYou hit a ship!")
         battlefield[row][col] = "X"
         if checkShipFoundered(row, col):
-            print("\nA ship was completely sunk!\n")
+            print("\nA ship was foundered!\n")
             ships_foundered += 1
         else:
-            print("A ship was shot\n")
+            print("A ship was hit!\n")
 
     ammo -= 1
 
@@ -207,5 +206,7 @@ ammo = 50
 ships_foundered = 0
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+# Used global variables because using them as parameters would be chaotic.
 
 runGame()

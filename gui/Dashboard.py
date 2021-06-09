@@ -1,5 +1,4 @@
 from tkinter import *
-from gui.Grid import ShowFieldWindow
 from gui.Singleplayer import ShowSingleplayer
 
 class ShowBoardGame:

@@ -19,7 +19,7 @@ def createField():
     for row in range(field_size):
         newrow = []
         for col in range(field_size):
-            newrow.append("O")
+            newrow.append("| |")
         field.append(newrow)
 
     return field
@@ -38,7 +38,7 @@ def checkValidShipPlacement(row_start, row_end, col_start, col_end):
     positions_are_viable = True
     for row in range(row_start, row_end):
         for col in range(col_start,col_end):
-            if battlefield[row][col] != '0':
+            if battlefield[row][col] != '| |':
                 positions_are_viable = False
                 break
 
@@ -51,35 +51,41 @@ def checkValidShipPlacement(row_start, row_end, col_start, col_end):
     return positions_are_viable
 
 
-def placeShip(row, col, direction, length):
+def checkPlaceShip(row, col, direction, length):
     global field_size
 
-    start_row, end_row, start_col, end_col = row, row + 1, col, col + 1
+    row_start = row
+    row_end = row+1
+    col_start = col
+    col_end = col+1
 
-    if direction == "left":
+    if direction == "LEFT":
         if col - length < 0:
             return False
-        start_col = col - length + 1
+        col_start = col - length + 1
 
-    elif direction == "right":
+    elif direction == "RIGHT":
         if col + length >= field_size:
             return False
-        end_col = col + length
+        col_end = col + length
 
-    elif direction == "up":
+    elif direction == "UP":
         if row - length < 0:
             return False
-        start_row = row - length + 1
+        row_start = row - length + 1
 
-    elif direction == "down":
+    elif direction == "DOWN":
         if row + length >= field_size:
             return False
-        end_row = row + length
+        row_end = row + length
 
-    return checkValidShipPlacement(start_row, end_row, start_col, end_col)
+    return checkValidShipPlacement(row_start, row_end, col_start, col_end)
 
 
-def checkShellChoice():
+def placeShip():
+    pass
+
+def checkShellShot():
     pass
 
 
@@ -99,7 +105,8 @@ def runGame():
     """
     This function runs the game.
     """
-    ShowBoardGame()
+    showField()
+    #ShowBoardGame()
     pass
 
 

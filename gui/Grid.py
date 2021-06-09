@@ -22,7 +22,7 @@ class ShowFieldWindow:
     def createField(self):
         with open('gui/game.json', 'r') as file:
             data = json.load(file)
-            field_size = data['fieldsize']
+            field_size = data['field_size']
             file.close()
 
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

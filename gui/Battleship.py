@@ -5,19 +5,23 @@
 #   Project:    IPASS
 # ============================= #
 
-
 # ============ IMPORTS ============ #
 import random
+import json
 
 
 # ============ Global Variables ============ #
-field_size = 10
-amount_of_ships = 4
+with open('gui/game.json', 'r') as file:
+    data = json.load(file)
+    field_size = data['field_size']
+    amount_of_ships = data['amount_of_ships']
+    ammo = data['ammo']
+    file.close()
+
 ship_min_size = 3
 ship_max_size = 5
 battlefield = [[]]
 ship_positions = [[]]
-ammo = 50
 ships_foundered = 0
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -26,6 +30,9 @@ row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 class doBattleshipGame:
 
     def __init__(self):
+        print(field_size)
+        print(amount_of_ships)
+        print(ammo)
         self.runGame()
 
     def createField(self):
@@ -57,6 +64,7 @@ class doBattleshipGame:
             if self.checkPlaceOnGrid(random_row, random_col, direction, ship_size):
                 ships_deployed += 1
 
+        return battlefield
 
     def showField(self):
         global battlefield

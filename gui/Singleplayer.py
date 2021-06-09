@@ -1,5 +1,6 @@
 from tkinter import *
 from gui.Grid import ShowFieldWindow
+from gui.Battleship import doBattleshipGame
 import json
 
 class ShowSingleplayer:
@@ -9,17 +10,16 @@ class ShowSingleplayer:
     # ========================= #
 
     def __init__(self):
-        #self.showSingleplayer()
         self.showSetup()
 
     def showSetup(self):
         self.setupboard = Tk()
         self.setupboard.title("Battleship - Singleplayer Board")
-        self.setupboard.geometry("350x200")
+        self.setupboard.geometry("350x350")
         self.setupboard.configure(background=self.bg)
         self.setupboard.resizable(0, 0)
 
-        self.label1 = Label(self.setupboard, text="\nInsert battlefield size:", font=("Arial 20 bold"))
+        self.label1 = Label(self.setupboard, text="\nINSERT INFORMATION", font=("Arial 20 bold"))
         self.label1.configure(background=self.bg, foreground=self.fg)
         self.label1.pack()
 
@@ -27,9 +27,26 @@ class ShowSingleplayer:
         self.whiteline.configure(background=self.bg, foreground=self.fg)
         self.whiteline.pack()
 
-        self.SetupEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.SetupEntry.configure(highlightbackground=self.bg)
-        self.SetupEntry.pack()
+        self.label2 = Label(self.setupboard, text="Battlefield size (10-26):", font=("Arial 14 bold"))
+        self.label2.configure(background=self.bg, foreground=self.fg)
+        self.label2.pack()
+        self.SizeEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.SizeEntry.configure(highlightbackground=self.bg)
+        self.SizeEntry.pack()
+
+        self.label3 = Label(self.setupboard, text="\nAmount of ships (1-10):", font=("Arial 14 bold"))
+        self.label3.configure(background=self.bg, foreground=self.fg)
+        self.label3.pack()
+        self.ShipsEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.ShipsEntry.configure(highlightbackground=self.bg)
+        self.ShipsEntry.pack()
+
+        self.label3 = Label(self.setupboard, text="\nAmount of shots:", font=("Arial 14 bold"))
+        self.label3.configure(background=self.bg, foreground=self.fg)
+        self.label3.pack()
+        self.AmmoEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.AmmoEntry.configure(highlightbackground=self.bg)
+        self.AmmoEntry.pack()
 
         self.whiteline3 = Label(self.setupboard, font=("Arial bold", 10))
         self.whiteline3.configure(background=self.bg, foreground=self.fg)
@@ -65,14 +82,20 @@ class ShowSingleplayer:
 
 
     def setupCheck(self):
-        size = self.SetupEntry.get()
+        size = self.SizeEntry.get()
+        ships = self.ShipsEntry.get()
+        ammo = self.AmmoEntry.get()
         try:
             size = int(size)
-            if size > 26 or size < 10:
+            ships = int(ships)
+            ammo = int(ammo)
+            if size > 26 or size < 10 or ships > 10 or ships <= 0:
                 self.invalidWindow()
             else:
                 data = {}
-                data['fieldsize'] = size
+                data['field_size'] = size
+                data['amount_of_ships'] = ships
+                data['ammo'] = ammo
                 with open('gui/game.json', 'w') as file:
                     json.dump(data, file)
                     file.close()
@@ -119,7 +142,7 @@ class ShowSingleplayer:
         self.whiteline3.pack()
 
         self.button = Button(self.singleboard, text="Fire!", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command=self.FireShell, highlightbackground=self.bg, foreground=self.bg)
+        self.button.configure(height="2", width="8", command=doBattleshipGame, highlightbackground=self.bg, foreground=self.bg)
         self.button.pack()
 
         self.whiteline4 = Label(self.singleboard, font=("Arial 10 bold"))
@@ -135,6 +158,7 @@ class ShowSingleplayer:
         self.textdash.tag_configure("center", justify='center')
         self.textdash.tag_add("center", 1.0, "end")
         self.textdash.pack()
+
 
         self.singleboard.mainloop()
 
@@ -154,12 +178,3 @@ class ShowSingleplayer:
 
         self.textdash.configure(state=DISABLED)
         return
-
-    def checkIfHit(self):
-        pass
-
-    def insertResult(self):
-        pass
-
-    def SingleplayerGame(self):
-        pass

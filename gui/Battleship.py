@@ -141,7 +141,7 @@ class doBattleshipGame:
                 print("Error: Please enter letter (A-J) for row and (0-9) for column")
                 continue
             if battlefield[row][col] == "#" or battlefield[row][col] == "X":
-                print("You have already shot a bullet here, pick somewhere else")
+                print("You have already shot a bullet here!")
                 continue
             if battlefield[row][col] == "." or battlefield[row][col] == "O":
                 valid_shot = True
@@ -199,7 +199,7 @@ class doBattleshipGame:
             print("You won the game!")
             game_over = True
         elif ammo <= 0:
-            print("Sorry, you lost! You ran out of bullets!")
+            print("You lost! You ran out of bullets before you could sink all the enemy ships!")
             game_over = True
 
 

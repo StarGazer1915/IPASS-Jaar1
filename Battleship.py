@@ -13,65 +13,59 @@ import random
 
 # ============ FUNCTIONS ============ #
 def createField():
+    global battlefield
     global field_size
-
-    field = []
-    for row in range(field_size):
-        newrow = []
-        for col in range(field_size):
-            newrow.append("| |")
-        field.append(newrow)
-
-    placeShips()
-    return field
-
-
-def placeShips():
-    global field_size
+    global amount_of_ships
     global ship_positions
-    global num_ships
 
-    rows, cols = (field_size, field_size)
-    ships_placed = 0
+    rows = field_size
+    cols = field_size
 
+    battlefield = []
+    for r in range(rows):
+        row = []
+        for c in range(cols):
+            row.append(".")
+        battlefield.append(row)
+
+    ships_deployed = 0
     ship_positions = []
 
-    while ships_placed != num_ships:
+    while ships_deployed != amount_of_ships:
         random_row = random.randint(0, rows - 1)
         random_col = random.randint(0, cols - 1)
         direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
-        ship_size = random.randint(2, 5)
-        if checkPlaceShip(random_row, random_col, direction, ship_size):
-            ships_placed += 1
+        ship_size = random.randint(ship_min_size, ship_max_size)
+        if checkPlaceOnGrid(random_row, random_col, direction, ship_size):
+            ships_deployed += 1
 
 
 def showField():
-    for i in createField():
+    global battlefield
+    for i in battlefield:
         print(i)
-    return
 
 
-def checkValidShipPlacement(row_start, row_end, col_start, col_end):
+def checkFieldPlaceShip(row_start, row_end, start_col, end_col):
     global battlefield
     global ship_positions
 
-    positions_are_viable = True
-    for row in range(row_start, row_end):
-        for col in range(col_start,col_end):
-            if battlefield[row][col] != '.':
-                positions_are_viable = False
+    positions_are_valid = True
+    for r in range(row_start, row_end):
+        for c in range(start_col, end_col):
+            if battlefield[r][c] != ".":
+                positions_are_valid = False
                 break
+    if positions_are_valid == True:
+        ship_positions.append([row_start, row_end, start_col, end_col])
+        for r in range(row_start, row_end):
+            for c in range(start_col, end_col):
+                battlefield[r][c] = "O"
 
-    if positions_are_viable == True:
-        ship_positions.append([row_start, row_end, col_start, col_end])
-        for row in range(row_start, row_end):
-            for col in range(col_start, col_end):
-                battlefield[row][col] = '0'
-
-    return positions_are_viable
+    return positions_are_valid
 
 
-def checkPlaceShip(row, col, direction, length):
+def checkPlaceOnGrid(row, col, direction, length):
     global field_size
 
     row_start = row
@@ -99,17 +93,17 @@ def checkPlaceShip(row, col, direction, length):
             return False
         row_end = row + length
 
-    return checkValidShipPlacement(row_start, row_end, col_start, col_end)
+    return checkFieldPlaceShip(row_start, row_end, col_start, col_end)
 
 
 def checkShellShot():
     global row_letters
     global battlefield
 
-    is_valid_placement = False
     row = -1
     col = -1
-    while is_valid_placement is False:
+    valid_shot = False
+    while valid_shot is False:
         placement = input("Enter row (A-J) and column (0-9) such as A3: ")
         placement = placement.upper()
         if len(placement) <= 0 or len(placement) > 2:
@@ -132,86 +126,86 @@ def checkShellShot():
             print("You have already shot a bullet here, pick somewhere else")
             continue
         if battlefield[row][col] == "." or battlefield[row][col] == "O":
-            is_valid_placement = True
+            valid_shot = True
 
     return row, col
 
 
 def fireShell():
     global battlefield
-    global ships_destroyed
-    global weapon_ammo
+    global ships_foundered
+    global ammo
 
     row, col = checkShellShot()
+
     if battlefield[row][col] == ".":
-        print("You missed!")
+        print("\nYou missed, no ship was shot\n")
         battlefield[row][col] = "#"
     elif battlefield[row][col] == "O":
-        print("You hit an enemy ship!", end=" ")
+        print("\nYou hit!")
         battlefield[row][col] = "X"
-        if checkShipDestroyed(row, col):
-            print("A ship has been foundered!")
-            ships_destroyed += 1
+        if checkShipFoundered(row, col):
+            print("\nA ship was completely sunk!\n")
+            ships_foundered += 1
         else:
-            print("A ship was hit!")
+            print("A ship was shot\n")
 
-    weapon_ammo -= 1
+    ammo -= 1
 
 
-def checkShipDestroyed(row, col):
+def checkShipFoundered(row, col):
     global ship_positions
     global battlefield
 
     for position in ship_positions:
-        row_start = position[0]
-        row_end = position[1]
-        col_start = position[2]
-        col_end = position[3]
-        if row_start <= row <= row_end and col_start <= col <= col_end:
-            for r in range(row_start, row_end):
-                for c in range(col_start, col_end):
+        start_row = position[0]
+        end_row = position[1]
+        start_col = position[2]
+        end_col = position[3]
+        if start_row <= row <= end_row and start_col <= col <= end_col:
+            for r in range(start_row, end_row):
+                for c in range(start_col, end_col):
                     if battlefield[r][c] != "X":
                         return False
+
     return True
 
 
-def checkGameOver():
-    global ships_destroyed
-    global num_ships
-    global weapon_ammo
+def checkIfGameOver():
+    global ships_foundered
+    global amount_of_ships
+    global ammo
     global game_over
 
-    if num_ships == ships_destroyed:
+    if amount_of_ships == ships_foundered:
         print("You won the game!")
         game_over = True
-    elif weapon_ammo <= 0:
-        print("You ran out of bullets, the enemy has prevailed!")
+    elif ammo <= 0:
+        print("Sorry, you lost! You ran out of bullets!")
         game_over = True
-
-    return
 
 
 def runGame():
     global game_over
 
     createField()
-
     while game_over is False:
         showField()
-        print(f"Number of ships remaining: {str(num_ships - ships_destroyed)}\nAmmo: {str(weapon_ammo)}")
+        print(f"Ships remaining: {str(amount_of_ships - ships_foundered)}\nAmmo: {str(ammo)}")
         fireShell()
-        print("\n\n")
-        checkGameOver()
+        checkIfGameOver()
 
 
 # ============ EXECUTION ============ #
-num_ships = 8
-ship_positions = [[]]
-ships_destroyed = 0
-weapon_ammo = 50
-row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-battlefield = [[]]
 field_size = 10
+amount_of_ships = 4
+ship_min_size = 3
+ship_max_size = 5
+battlefield = [[]]
+ship_positions = [[]]
+ammo = 50
+ships_foundered = 0
 game_over = False
+row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 runGame()

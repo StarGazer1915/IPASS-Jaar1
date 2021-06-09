@@ -53,7 +53,7 @@ class ShowSingleplayer:
         self.label1.configure(background=self.bg, foreground=self.fg)
         self.label1.pack()
 
-        self.label1 = Label(self.invalidboard, text="\nThis is not a valid size!\nPick a number between 4 and 26.\n", font=("Arial 14 bold"))
+        self.label1 = Label(self.invalidboard, text="\nThis is not a valid size!\nPick a number between 10 and 26.\n", font=("Arial 14 bold"))
         self.label1.configure(background=self.bg, foreground=self.fg)
         self.label1.pack()
 
@@ -68,7 +68,7 @@ class ShowSingleplayer:
         size = self.SetupEntry.get()
         try:
             size = int(size)
-            if size > 26 or size < 4:
+            if size > 26 or size < 10:
                 self.invalidWindow()
             else:
                 data = {}

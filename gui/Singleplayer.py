@@ -57,17 +57,17 @@ class ShowSingleplayer:
         self.label2.configure(background=self.bg, foreground=self.fg)
         self.label2.pack()
 
-        self.entry = Entry(self.singleboard, font=("Arial bold", 16))
-        self.entry.configure(highlightbackground=self.bg)
-        self.entry.pack()
+        self.FireEntry = Entry(self.singleboard, font=("Arial bold", 16))
+        self.FireEntry.configure(highlightbackground=self.bg)
+        self.FireEntry.pack()
 
         self.whiteline3 = Label(self.singleboard, font=("Arial bold", 10))
         self.whiteline3.configure(background=self.bg, foreground=self.fg)
         self.whiteline3.pack()
 
-        self.button = Button(self.singleboard, text="Fire!", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command="", highlightbackground=self.bg, foreground=self.bg)
-        self.button.pack()
+        self.FireButton = Button(self.singleboard, text="Fire!", font=("Arial bold", 14))
+        self.FireButton.configure(height="2", width="8", command=self.fireShot, highlightbackground=self.bg, foreground=self.bg)
+        self.FireButton.pack()
 
         self.whiteline4 = Label(self.singleboard, font=("Arial 10 bold"))
         self.whiteline4.configure(background=self.bg, foreground=self.fg)
@@ -78,11 +78,12 @@ class ShowSingleplayer:
         self.label2.pack()
 
         self.textdash = Text(self.singleboard, font=("Arial", 16))
-        self.textdash.config(height="16", width="80", background=self.bg, foreground="White", highlightbackground="grey")
-        #self.textdash.tag_configure("center", justify='center')
+        self.textdash.config(height="16", width="40", background=self.bg, foreground="White", highlightbackground="grey")
+        self.textdash.tag_configure("center", justify='center')
         self.textdash.tag_add("center", 1.0, "end")
         self.textdash.pack()
-        self.runGame()
+
+        self.createField()
 
         self.singleboard.mainloop()
 
@@ -117,19 +118,6 @@ class ShowSingleplayer:
                 ships_deployed += 1
 
         return battlefield
-
-    def insertField(self):
-        global battlefield
-
-        self.textdash.configure(state=NORMAL)
-        self.textdash.delete('1.0', END)
-
-        for row in battlefield:
-            self.textdash.insert(END, f'\n"{row}"\n')
-            print(row)
-
-        self.textdash.configure(state=DISABLED)
-        return
 
 
     def checkFieldPlaceShip(self, row_start, row_end, start_col, end_col):
@@ -182,47 +170,40 @@ class ShowSingleplayer:
         return self.checkFieldPlaceShip(row_start, row_end, col_start, col_end)
 
 
-    def checkShellShot(self):
+    def checkShellShot(self, shot):
         global row_letters
         global battlefield
 
-        row = -1
-        col = -1
-        valid_shot = False
-        while valid_shot is False:
-            #placement = input("Enter row (A-J) and column (0-9) such as A3: ")
-            placement = "A4"
-            if len(placement) <= 0 or len(placement) > 2:
-                print("Error: Please enter only one row and column such as A3")
-                continue
-            row = placement[0]
-            col = placement[1]
-            if not row.isalpha() or not col.isnumeric():
-                print("Error: Please enter letter (A-J) for row and (0-9) for column")
-                continue
-            row = row_letters.find(row)
-            if not (-1 < row < field_size):
-                print("Error: Please enter letter (A-J) for row and (0-9) for column")
-                continue
-            col = int(col)
-            if not (-1 < col < field_size):
-                print("Error: Please enter letter (A-J) for row and (0-9) for column")
-                continue
-            if battlefield[row][col] == "#" or battlefield[row][col] == "X":
-                print("You have already shot a bullet here!")
-                continue
-            if battlefield[row][col] == "_" or battlefield[row][col] == "±":
-                valid_shot = True
+        if len(shot) <= 0 or len(shot) > 2:
+            print("Error: Please enter only one row and column such as A3")
+
+        row = shot[0]
+        col = shot[1]
+
+        if not row.isalpha() or not col.isnumeric():
+            print("Error: Please enter letter (A-J) for row and (0-9) for column")
+
+        row = row_letters.find(row)
+
+        if not (-1 < row < field_size):
+            print("Error: Please enter letter (A-J) for row and (0-9) for column")
+
+        col = int(col)
+
+        if not (-1 < col < field_size):
+            print("Error: Please enter letter (A-J) for row and (0-9) for column")
+        elif battlefield[row][col] == "#" or battlefield[row][col] == "X":
+            print("You have already shot a bullet here!")
 
         return row, col
 
 
-    def fireShell(self):
+    def fireSequence(self, shot):
         global battlefield
         global ships_foundered
         global ammo
 
-        row, col = self.checkShellShot()
+        row, col = self.checkShellShot(shot)
 
         if battlefield[row][col] == "_":
             print("\nYou didn't hit anything, try again!\n")
@@ -231,7 +212,7 @@ class ShowSingleplayer:
             print("\nYou hit a ship!")
             battlefield[row][col] = "X"
             if self.checkShipFoundered(row, col):
-                print("\nA ship was foundered!\n")
+                print("A ship was foundered!\n")
                 ships_foundered += 1
             else:
                 print("A ship was hit!\n")
@@ -271,17 +252,36 @@ class ShowSingleplayer:
             game_over = True
 
 
-    def runGame(self):
-        global game_over
+    def fireShot(self):
+        global row_letters
 
-        self.createField()
+        self.textdash.configure(state=NORMAL)
+        self.textdash.delete('1.0', END)
 
-        self.insertField()
-        print(f"Ships remaining: {str(amount_of_ships - ships_foundered)}\nAmmo: {str(ammo)}")
-        self.fireShell()
-        self.checkIfGameOver()
-        self.insertField()
+        shot = self.FireEntry.get().upper()
+
+        if shot != '':
+            if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 2 or len(shot) <= 1:
+                self.textdash.insert(END, "That is not a valid coordinate, try again!")
+            else:
+                self.fireSequence(shot)
+                self.insertText()
+        else:
+            self.textdash.insert(END, "That is not a valid coordinate, try again!")
+
+        self.textdash.configure(state=DISABLED)
+        return
 
 
-    def fireShell(self):
-        pass
+    def insertText(self):
+        global ammo
+
+        self.textdash.configure(state=NORMAL)
+        self.textdash.delete('1.0', END)
+
+        for i in battlefield:
+            self.textdash.insert(END, f"{i}\n")
+
+        self.textdash.insert(END, f"\nYou've got {ammo} rounds left!")
+
+        self.textdash.configure(state=DISABLED)

@@ -1,6 +1,7 @@
 from tkinter import *
 from gui.Grid import ShowFieldWindow
 from gui.Battleship import doBattleshipGame
+import random
 import json
 
 class ShowSingleplayer:
@@ -89,7 +90,7 @@ class ShowSingleplayer:
             size = int(size)
             ships = int(ships)
             ammo = int(ammo)
-            if size > 26 or size < 10 or ships > 10 or ships <= 0:
+            if size > 26 or size < 10 or ships > 10 or ships <= 0 or ammo <= 0:
                 self.invalidWindow()
             else:
                 data = {}
@@ -102,7 +103,8 @@ class ShowSingleplayer:
 
                 self.setupboard.destroy()
                 self.showSingleplayer()
-        except:
+        except TypeError as error:
+            print(error)
             self.invalidWindow()
 
 
@@ -142,7 +144,7 @@ class ShowSingleplayer:
         self.whiteline3.pack()
 
         self.button = Button(self.singleboard, text="Fire!", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command=doBattleshipGame, highlightbackground=self.bg, foreground=self.bg)
+        self.button.configure(height="2", width="8", command="", highlightbackground=self.bg, foreground=self.bg)
         self.button.pack()
 
         self.whiteline4 = Label(self.singleboard, font=("Arial 10 bold"))
@@ -158,23 +160,30 @@ class ShowSingleplayer:
         self.textdash.tag_configure("center", justify='center')
         self.textdash.tag_add("center", 1.0, "end")
         self.textdash.pack()
-
+        self.startGame()
 
         self.singleboard.mainloop()
 
+
+    def startGame(self):
+        self.textdash.configure(state=NORMAL)
+        self.textdash.delete('1.0', END)
+
+        print("STARTED GAME")
+
+        pass
 
     def FireShell(self):
         self.textdash.configure(state=NORMAL)
         self.textdash.delete('1.0', END)
 
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        position = self.entry.get()
+        shot = self.entry.get()
 
-        if position[0] not in alphabet or position[1] in alphabet or len(position) > 2 or len(position) <= 1:
+        if shot[0] not in alphabet or shot[1] in alphabet or len(shot) > 2 or len(shot) <= 1:
             self.textdash.insert(END, "That is not a valid coordinate, try again!")
         else:
-            self.textdash.insert(END, f"Fired shell at: {position}\n\n")
-            self.textdash.insert(END, f"You hit an enemy ship!")
+            self.textdash.insert(END, f"Fired shell at: {shot}\n\n")
 
         self.textdash.configure(state=DISABLED)
         return

@@ -96,8 +96,7 @@ class ShowSingleplayer:
         global ship_min_size
         global ship_max_size
 
-        rows = field_size
-        cols = field_size
+        rows, cols = field_size, field_size
 
         battlefield = []
         for r in range(rows):
@@ -106,8 +105,7 @@ class ShowSingleplayer:
                 row.append("_")
             battlefield.append(row)
 
-        ships_deployed = 0
-        ship_positions = []
+        ships_deployed, ship_positions = 0, []
 
         while ships_deployed != amount_of_ships:
             random_row = random.randint(0, rows - 1)
@@ -130,11 +128,12 @@ class ShowSingleplayer:
                 if battlefield[r][c] != "_":
                     positions_are_valid = False
                     break
+
         if positions_are_valid == True:
             ship_positions.append([row_start, row_end, start_col, end_col])
             for r in range(row_start, row_end):
                 for c in range(start_col, end_col):
-                    battlefield[r][c] = "±"
+                    battlefield[r][c] = "0"
 
         return positions_are_valid
 
@@ -142,10 +141,7 @@ class ShowSingleplayer:
     def checkPlaceOnGrid(self, row, col, direction, length):
         global field_size
 
-        row_start = row
-        row_end = row+1
-        col_start = col
-        col_end = col+1
+        row_start, row_end, col_start, col_end = row, row+1, col, col+1
 
         if direction == "LEFT":
             if col - length < 0:
@@ -191,24 +187,17 @@ class ShowSingleplayer:
         global ammo
 
         self.textdash.configure(state=NORMAL)
-
         row, col = self.checkShellShot(shot)
 
         if battlefield[row][col] == "_":
-            print("_")
-            self.textdash.insert(END, f"\nYou didn't hit anything, try again!")
+            self.textdash.insert(END, f"You didn't hit anything, try again!\n\n")
             battlefield[row][col] = "#"
-        elif battlefield[row][col] == "±":
-            print("±")
-            self.textdash.insert(END, f"\nYou hit a ship!")
+        elif battlefield[row][col] == "0":
+            self.textdash.insert(END, f"You hit a ship!\n\n")
             battlefield[row][col] = "X"
             if self.checkShipFoundered(row, col):
-                print("Foundered")
-                self.textdash.insert(END, f"\nA ship was foundered!")
+                self.textdash.insert(END, f"A ship was foundered!\n\n")
                 ships_foundered += 1
-            else:
-                print("Hit")
-                self.textdash.insert(END, f"\nA ship was hit!")
 
         self.textdash.configure(state=DISABLED)
 
@@ -272,7 +261,6 @@ class ShowSingleplayer:
         global ammo
 
         self.textdash.configure(state=NORMAL)
-        self.textdash.delete('1.0', END)
 
         for i in battlefield:
             self.textdash.insert(END, f"{i}\n")
@@ -280,3 +268,13 @@ class ShowSingleplayer:
         self.textdash.insert(END, f"\nYou've got {ammo} rounds left!")
 
         self.textdash.configure(state=DISABLED)
+
+        with open('gui/game.json', 'r+') as file:
+            data = json.load(file)
+            newgrid = {'battlefield' : battlefield}
+            data.update(newgrid)
+            file.seek(0)
+            json.dump(data, file)
+            file.close()
+
+        return

@@ -5,6 +5,8 @@ class ShowFieldWindow:
     # ====== Visual Vars ====== #
     bg = "#0033cc"
     fg = "#ffffff"
+    sea = '#003399'
+    hit = '#ff0000'
     # ========================= #
 
     def __init__(self):
@@ -15,7 +17,9 @@ class ShowFieldWindow:
         self.fieldboard.title("Battleship - Field")
         self.fieldboard.configure(background=self.bg)
         self.fieldboard.resizable(0,0)
+
         self.createField()
+        self.update()
 
         self.fieldboard.mainloop()
 
@@ -29,16 +33,25 @@ class ShowFieldWindow:
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
         battlefield = []
-        for r in range(field_size):
+        i = 0
+        for r in field:
             row = []
-            row.append(Label(self.fieldboard, text=f"{alphabet[r]}", font=("Arial", 10), height="2",
+            row.append(Label(self.fieldboard, text=f"{alphabet[i]}", font=("Arial", 10), height="2",
                              width="5", background=self.bg, foreground=self.fg))
 
-            for c in range(1,field_size+1):
-                row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
-                                 relief=RAISED, foreground=self.bg))
+            for char in r:
+                if char == '#':
+                    row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
+                                     relief=RAISED, background=self.sea, foreground=self.bg))
+                elif char == 'X':
+                    row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
+                                     relief=RAISED, background=self.hit, foreground=self.bg))
+                else:
+                    row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
+                                     relief=RAISED, foreground=self.bg))
 
             battlefield.append(row)
+            i += 1
 
         row = []
         row.append(Label(self.fieldboard, text=f"", font=("Arial", 10), height="2", width="5",
@@ -57,3 +70,8 @@ class ShowFieldWindow:
                 item.grid(row=row, column=col, sticky=W)
                 col += 1
             row += 1
+
+
+    def update(self):
+        self.createField()
+        self.fieldboard.after(5000, self.update)

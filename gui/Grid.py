@@ -30,35 +30,22 @@ class ShowFieldWindow:
         battlefield = []
         for r in range(field_size):
             row = []
-            row.append(Label(self.fieldboard,
-                             text=f"{alphabet[r]}",
-                             font=("Arial", 10),
-                             height="2",
-                             width="5",
-                             borderwidth=2,
-                             background=self.bg,
-                             foreground=self.fg))
+            row.append(Label(self.fieldboard, text=f"{alphabet[r]}", font=("Arial", 10), height="2",
+                             width="5", background=self.bg, foreground=self.fg))
 
             for c in range(1,field_size+1):
-                row.append(Label(self.fieldboard,
-                                  font=("Arial", 10),
-                                  height="2",
-                                  width="5",
-                                  relief=RAISED,
-                                  foreground=self.bg))
+                row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
+                                 relief=RAISED, foreground=self.bg))
 
             battlefield.append(row)
 
         row = []
-        for item in range(0,field_size+1):
-            row.append(Label(self.fieldboard,
-                             text=f"{item}",
-                             font=("Arial", 10),
-                             height="2",
-                             width="5",
-                             borderwidth=2,
-                             background=self.bg,
-                             foreground=self.fg))
+        row.append(Label(self.fieldboard, text=f"", font=("Arial", 10), height="2", width="5",
+                         background=self.bg, foreground=self.fg))
+
+        for item in range(0,field_size):
+            row.append(Label(self.fieldboard, text=f"{item}", font=("Arial", 10), height="2", width="5",
+                             background=self.bg, foreground=self.fg))
 
         battlefield.append(row)
 

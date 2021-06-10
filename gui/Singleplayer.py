@@ -174,21 +174,8 @@ class ShowSingleplayer:
         global row_letters
         global battlefield
 
-        if len(shot) <= 0 or len(shot) > 2:
-            print("Error: Please enter only one row and column such as A3")
-
-        row = shot[0]
-        col = shot[1]
-
-        if not row.isalpha() or not col.isnumeric():
-            print("Error: Please enter letter (A-J) for row and (0-9) for column")
-
-        row = row_letters.find(row)
-
-        if not (-1 < row < field_size):
-            print("Error: Please enter letter (A-J) for row and (0-9) for column")
-
-        col = int(col)
+        row, col = shot[0], shot[1:]
+        row, col = row_letters.find(row), int(col)
 
         if not (-1 < col < field_size):
             print("Error: Please enter letter (A-J) for row and (0-9) for column")
@@ -203,19 +190,27 @@ class ShowSingleplayer:
         global ships_foundered
         global ammo
 
+        self.textdash.configure(state=NORMAL)
+
         row, col = self.checkShellShot(shot)
 
         if battlefield[row][col] == "_":
-            print("\nYou didn't hit anything, try again!\n")
+            print("_")
+            self.textdash.insert(END, f"\nYou didn't hit anything, try again!")
             battlefield[row][col] = "#"
         elif battlefield[row][col] == "±":
-            print("\nYou hit a ship!")
+            print("±")
+            self.textdash.insert(END, f"\nYou hit a ship!")
             battlefield[row][col] = "X"
             if self.checkShipFoundered(row, col):
-                print("A ship was foundered!\n")
+                print("Foundered")
+                self.textdash.insert(END, f"\nA ship was foundered!")
                 ships_foundered += 1
             else:
-                print("A ship was hit!\n")
+                print("Hit")
+                self.textdash.insert(END, f"\nA ship was hit!")
+
+        self.textdash.configure(state=DISABLED)
 
         ammo -= 1
 
@@ -261,7 +256,7 @@ class ShowSingleplayer:
         shot = self.FireEntry.get().upper()
 
         if shot != '':
-            if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 2 or len(shot) <= 1:
+            if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 3 or len(shot) <= 1:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
             else:
                 self.fireSequence(shot)

@@ -7,9 +7,14 @@ import json
 # ============ Global Variables ============ #
 with open('gui/game.json', 'r') as file:
     data = json.load(file)
-    field_size = data['field_size']
-    amount_of_ships = data['amount_of_ships']
-    ammo = data['ammo']
+    try:
+        field_size = data['field_size']
+        amount_of_ships = data['amount_of_ships']
+        ammo = data['ammo']
+    except:
+        field_size = 10
+        amount_of_ships = 4
+        ammo = 50
     file.close()
 
 ship_min_size = 3
@@ -276,5 +281,3 @@ class ShowSingleplayer:
             file.seek(0)
             json.dump(data, file)
             file.close()
-
-        return

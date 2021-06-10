@@ -15,11 +15,11 @@ import json
 field_size = 0
 amount_of_ships = 0
 ammo = 0
+ships_foundered = 0
 ship_min_size = 3
 ship_max_size = 5
 battlefield = [[]]
 ship_positions = [[]]
-ships_foundered = 0
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # ================================= #
@@ -34,6 +34,8 @@ class ShowSingleplayer:
     def __init__(self):
         global game_over
         game_over = False
+        global ships_foundered
+        ships_foundered = 0
         self.loadJson()
         self.showSingleplayer()
 
@@ -177,15 +179,13 @@ class ShowSingleplayer:
         global row_letters
         global battlefield
 
-        self.textdash.configure(state=NORMAL)
-
         row, col = shot[0], shot[1:]
         row, col = row_letters.find(row), int(col)
 
         if battlefield[row][col] == "#" or battlefield[row][col] == "X":
+            self.textdash.configure(state=NORMAL)
             self.textdash.insert(END, f"You have already fired a shell here!\n\n")
-
-        self.textdash.configure(state=DISABLED)
+            self.textdash.configure(state=DISABLED)
 
         return row, col
 

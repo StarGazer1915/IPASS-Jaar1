@@ -12,18 +12,9 @@ import random
 import json
 
 # ============ GLOBALS ============ #
-with open('gui/game.json', 'r') as file:
-    data = json.load(file)
-    try:
-        field_size = data['field_size']
-        amount_of_ships = data['amount_of_ships']
-        ammo = data['ammo']
-    except:
-        field_size = 10
-        amount_of_ships = 4
-        ammo = 50
-    file.close()
-
+field_size = 0
+amount_of_ships = 0
+ammo = 0
 ship_min_size = 3
 ship_max_size = 5
 battlefield = [[]]
@@ -41,6 +32,7 @@ class ShowSingleplayer:
     # ========================= #
 
     def __init__(self):
+        self.loadJson()
         self.showSingleplayer()
 
     def showSingleplayer(self):
@@ -97,6 +89,7 @@ class ShowSingleplayer:
         self.textdash.pack()
 
         self.createField()
+        self.jsonBattlefield({'battlefield': battlefield})
 
         self.singleboard.mainloop()
 
@@ -109,7 +102,8 @@ class ShowSingleplayer:
         global ship_min_size
         global ship_max_size
 
-        rows, cols = field_size, field_size
+        rows = field_size
+        cols = field_size
 
         battlefield = []
         for r in range(rows):
@@ -127,8 +121,6 @@ class ShowSingleplayer:
             ship_size = random.randint(ship_min_size, ship_max_size)
             if self.checkPlaceOnGrid(random_row, random_col, direction, ship_size):
                 ships_deployed += 1
-
-        return battlefield
 
 
     def checkFieldPlaceShip(self, row_start, row_end, start_col, end_col):
@@ -267,7 +259,28 @@ class ShowSingleplayer:
             self.textdash.insert(END, "That is not a valid coordinate, try again!")
 
         self.textdash.configure(state=DISABLED)
-        return
+
+
+    def jsonBattlefield(self, item):
+        with open('gui/game.json', 'r+') as file:
+            data = json.load(file)
+            data.update(item)
+            file.seek(0)
+            json.dump(data, file)
+            file.close()
+
+
+    def loadJson(self):
+        global field_size
+        global amount_of_ships
+        global ammo
+
+        with open('gui/game.json', 'r') as file:
+            data = json.load(file)
+            field_size = data['field_size']
+            amount_of_ships = data['amount_of_ships']
+            ammo = data['ammo']
+            file.close()
 
 
     def insertText(self):
@@ -281,11 +294,4 @@ class ShowSingleplayer:
         self.textdash.insert(END, f"\nYou've got {ammo} rounds left!")
 
         self.textdash.configure(state=DISABLED)
-
-        with open('gui/game.json', 'r+') as file:
-            data = json.load(file)
-            newgrid = {'battlefield' : battlefield}
-            data.update(newgrid)
-            file.seek(0)
-            json.dump(data, file)
-            file.close()
+        self.jsonBattlefield({'battlefield': battlefield})

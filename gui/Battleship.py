@@ -5,12 +5,11 @@
 #   Project:    IPASS
 # ============================= #
 
-# ============ IMPORTS ============ #
+# ========== IMPORTS ========== #
 import random
 import json
 
-
-# ============ Global Variables ============ #
+# ========== GLOBALS ========== #
 with open('gui/game.json', 'r') as file:
     data = json.load(file)
     try:

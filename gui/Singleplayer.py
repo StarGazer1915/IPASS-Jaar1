@@ -26,7 +26,7 @@ row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 class ShowSingleplayer:
-    # ====== Visual Vars ====== #
+    # ======== Visuals ======== #
     bg = "#0033cc"
     fg = "#ffffff"
     # ========================= #
@@ -278,7 +278,6 @@ class ShowSingleplayer:
         global ammo
 
         self.textdash.configure(state=NORMAL)
-
         self.textdash.insert(END, f"\nYou've got {ammo} rounds left!\n\n")
 
         for i in battlefield:

@@ -1,12 +1,20 @@
+# ============ STUDENT ============ #
+#   Naam:       Justin Klein
+#   Klas:       V1B
+#   Nummer:     1707815
+#   Project:    IPASS
+# ================================= #
+
+# ============ IMPORTS ============ #
 from tkinter import *
 import json
+# ================================= #
+
 
 class ShowFieldWindow:
-    # ====== Visual Vars ====== #
-    bg = "#0033cc"
-    fg = "#ffffff"
-    sea = '#003399'
-    hit = '#ff0000'
+    # ======== Visuals ======== #
+    bg, fg = "#0033cc", "#ffffff"
+    sea, hit = '#003399', '#ff0000'
     # ========================= #
 
     def __init__(self):
@@ -22,6 +30,7 @@ class ShowFieldWindow:
         self.update()
 
         self.fieldboard.mainloop()
+
 
     def createField(self):
         with open('gui/game.json', 'r') as file:

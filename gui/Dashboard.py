@@ -1,9 +1,19 @@
+# ============ STUDENT ============ #
+#   Naam:       Justin Klein
+#   Klas:       V1B
+#   Nummer:     1707815
+#   Project:    IPASS
+# ================================= #
+
+# ============ IMPORTS ============ #
 from tkinter import *
 from gui.Singleplayer import ShowSingleplayer
 import json
+# ================================= #
+
 
 class ShowBoardGame:
-    # ====== Visual Vars ====== #
+    # ======== Visuals ======== #
     bg = "#0033cc"
     fg = "#ffffff"
     # ========================= #
@@ -40,6 +50,7 @@ class ShowBoardGame:
 
         self.dashboard.mainloop()
 
+
     def invalidWindow(self):
         self.invalidboard = Tk()
         self.invalidboard.title("Invalid Entry")
@@ -60,6 +71,7 @@ class ShowBoardGame:
         self.button.pack()
 
         self.invalidboard.mainloop()
+
 
     def showSPSetup(self):
         self.setupboard = Tk()
@@ -117,7 +129,6 @@ class ShowBoardGame:
                 self.invalidWindow()
 
             size, ships, ammo = int(size), int(ships), int(ammo)
-
             if size > 26 or size < 10 or ships > 10 or ships <= 0 or ammo <= 0:
                 self.invalidWindow()
             else:

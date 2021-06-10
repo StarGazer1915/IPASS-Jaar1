@@ -32,6 +32,8 @@ class ShowSingleplayer:
     # ========================= #
 
     def __init__(self):
+        global game_over
+        game_over = False
         self.loadJson()
         self.showSingleplayer()
 
@@ -175,13 +177,15 @@ class ShowSingleplayer:
         global row_letters
         global battlefield
 
+        self.textdash.configure(state=NORMAL)
+
         row, col = shot[0], shot[1:]
         row, col = row_letters.find(row), int(col)
 
-        if not (-1 < col < field_size):
-            print("Error: Please enter letter (A-J) for row and (0-9) for column")
-        elif battlefield[row][col] == "#" or battlefield[row][col] == "X":
-            print("You have already shot a bullet here!")
+        if battlefield[row][col] == "#" or battlefield[row][col] == "X":
+            self.textdash.insert(END, f"You have already fired a shell here!\n\n")
+
+        self.textdash.configure(state=DISABLED)
 
         return row, col
 
@@ -198,14 +202,13 @@ class ShowSingleplayer:
             self.textdash.insert(END, f"You didn't hit anything, try again!\n\n")
             battlefield[row][col] = "#"
         elif battlefield[row][col] == "0":
-            self.textdash.insert(END, f"You hit a ship!\n\n")
+            self.textdash.insert(END, f"You hit a ship!\n")
             battlefield[row][col] = "X"
             if self.checkShipFoundered(row, col):
                 self.textdash.insert(END, f"A ship was foundered!\n\n")
                 ships_foundered += 1
 
         self.textdash.configure(state=DISABLED)
-
         ammo -= 1
 
 
@@ -234,10 +237,17 @@ class ShowSingleplayer:
         global game_over
 
         if amount_of_ships == ships_foundered:
-            print("You won the game!")
+            self.textdash.configure(state=NORMAL)
+            self.textdash.delete('1.0', END)
+            self.textdash.insert(END, "You won the game!\nCongratulations!")
+            self.textdash.configure(state=DISABLED)
             game_over = True
+
         elif ammo <= 0:
-            print("You lost! You ran out of bullets before you could sink all the enemy ships!")
+            self.textdash.configure(state=NORMAL)
+            self.textdash.delete('1.0', END)
+            self.textdash.insert(END, "You lost!\nYou ran out of bullets!")
+            self.textdash.configure(state=DISABLED)
             game_over = True
 
 
@@ -249,16 +259,33 @@ class ShowSingleplayer:
 
         shot = self.FireEntry.get().upper()
 
-        if shot != '':
+        if shot != '' and game_over != True:
             if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 3 or len(shot) <= 1:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
             else:
                 self.fireSequence(shot)
                 self.insertText()
+                self.checkIfGameOver()
+        elif game_over:
+            self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
         else:
             self.textdash.insert(END, "That is not a valid coordinate, try again!")
 
         self.textdash.configure(state=DISABLED)
+
+
+    def insertText(self):
+        global ammo
+
+        self.textdash.configure(state=NORMAL)
+
+        self.textdash.insert(END, f"\nYou've got {ammo} rounds left!\n\n")
+
+        for i in battlefield:
+            self.textdash.insert(END, f"{i}\n")
+
+        self.textdash.configure(state=DISABLED)
+        self.jsonBattlefield({'battlefield': battlefield})
 
 
     def jsonBattlefield(self, item):
@@ -281,17 +308,3 @@ class ShowSingleplayer:
             amount_of_ships = data['amount_of_ships']
             ammo = data['ammo']
             file.close()
-
-
-    def insertText(self):
-        global ammo
-
-        self.textdash.configure(state=NORMAL)
-
-        for i in battlefield:
-            self.textdash.insert(END, f"{i}\n")
-
-        self.textdash.insert(END, f"\nYou've got {ammo} rounds left!")
-
-        self.textdash.configure(state=DISABLED)
-        self.jsonBattlefield({'battlefield': battlefield})

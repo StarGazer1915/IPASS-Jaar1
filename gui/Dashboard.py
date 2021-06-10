@@ -135,5 +135,5 @@ class ShowBoardGame:
         except TypeError as error:
             print(error)
             self.invalidWindow()
-        except ValueError as error:
+        except ValueError:
             pass

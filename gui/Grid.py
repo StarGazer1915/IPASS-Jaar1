@@ -23,6 +23,7 @@ class ShowFieldWindow:
         with open('gui/game.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
+            field = data['battlefield']
             file.close()
 
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

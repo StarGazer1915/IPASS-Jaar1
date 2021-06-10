@@ -1,10 +1,17 @@
+# ============ STUDENT ============ #
+#   Naam:       Justin Klein
+#   Klas:       V1B
+#   Nummer:     1707815
+#   Project:    IPASS
+# ================================= #
+
 # ============ IMPORTS ============ #
 from tkinter import *
 from gui.Grid import ShowFieldWindow
 import random
 import json
 
-# ============ Global Variables ============ #
+# ============ GLOBALS ============ #
 with open('gui/game.json', 'r') as file:
     data = json.load(file)
     try:
@@ -24,7 +31,8 @@ ship_positions = [[]]
 ships_foundered = 0
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-# ========================================== #
+# ================================= #
+
 
 class ShowSingleplayer:
     # ====== Visual Vars ====== #

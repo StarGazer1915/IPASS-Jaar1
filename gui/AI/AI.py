@@ -15,11 +15,17 @@ import json
 field_size = 0
 amount_of_ships = 0
 ammo = 0
-ships_foundered = 0
+
 ship_min_size = 3
 ship_max_size = 5
-battlefield = [[]]
-ship_positions = [[]]
+
+ships_foundered_pl = 0
+ships_foundered_ai = 0
+battlefield_pl = [[]]
+battlefield_ai = [[]]
+ship_positions_pl = [[]]
+ship_positions_ai = [[]]
+
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # ================================= #
@@ -33,11 +39,16 @@ class ShowAIGame:
 
     def __init__(self):
         global game_over
-        global ships_foundered
         game_over = False
-        ships_foundered = 0
+
+        global ships_foundered_pl
+        global ships_foundered_ai
+        ships_foundered_pl = 0
+        ships_foundered_ai = 0
+
         self.loadJson()
         self.showSingleplayer()
+
 
     def showSingleplayer(self):
         self.aiboard = Tk()
@@ -92,30 +103,21 @@ class ShowAIGame:
         self.textdash.tag_add("center", 1.0, "end")
         self.textdash.pack()
 
-        self.createField()
-        self.jsonBattlefield({'battlefield': battlefield})
+        self.createFields()
+        self.jsonBattlefield({'battlefield': battlefield_pl})
 
         self.aiboard.mainloop()
 
-
-    def createField(self):
-        global battlefield
-        global field_size
-        global amount_of_ships
-        global ship_positions
-        global ship_min_size
-        global ship_max_size
-
-        rows = field_size
-        cols = field_size
-
-        battlefield = []
+    def makeField(self, battlefield, rows, cols):
         for r in range(rows):
             row = []
             for c in range(cols):
                 row.append("_")
             battlefield.append(row)
 
+        return battlefield
+
+    def makeShipPositions(self, ship_positions, amount_of_ships, rows, cols):
         ships_deployed, ship_positions = 0, []
 
         while ships_deployed != amount_of_ships:
@@ -126,23 +128,45 @@ class ShowAIGame:
             if self.checkPlaceOnGrid(random_row, random_col, direction, ship_size):
                 ships_deployed += 1
 
+        return ship_positions
+
+
+    def createFields(self):
+        global field_size
+        global amount_of_ships
+        global ship_min_size
+        global ship_max_size
+        global battlefield_pl
+        global battlefield_ai
+        global ship_positions_pl
+        global ship_positions_ai
+
+        rows, cols = field_size, field_size
+        battlefield_pl, battlefield_ai = [], []
+
+        battlefield_pl = self.makeField(battlefield_pl, rows, cols)
+        battlefield_ai = self.makeField(battlefield_ai, rows, cols)
+
+        ship_positions_pl = self.makeShipPositions(ship_positions_pl, amount_of_ships, rows, cols)
+        ship_positions_ai = self.makeShipPositions(ship_positions_ai, amount_of_ships, rows, cols)
+
 
     def checkFieldPlaceShip(self, row_start, row_end, start_col, end_col):
-        global battlefield
-        global ship_positions
+        global battlefield_pl
+        global ship_positions_pl
 
         positions_are_valid = True
         for r in range(row_start, row_end):
             for c in range(start_col, end_col):
-                if battlefield[r][c] != "_":
+                if battlefield_pl[r][c] != "_":
                     positions_are_valid = False
                     break
 
         if positions_are_valid == True:
-            ship_positions.append([row_start, row_end, start_col, end_col])
+            ship_positions_pl.append([row_start, row_end, start_col, end_col])
             for r in range(row_start, row_end):
                 for c in range(start_col, end_col):
-                    battlefield[r][c] = "0"
+                    battlefield_pl[r][c] = "0"
 
         return positions_are_valid
 
@@ -177,12 +201,12 @@ class ShowAIGame:
 
     def checkShellShot(self, shot):
         global row_letters
-        global battlefield
+        global battlefield_pl
 
         row, col = shot[0], shot[1:]
         row, col = row_letters.find(row), int(col)
 
-        if battlefield[row][col] == "#" or battlefield[row][col] == "X":
+        if battlefield_pl[row][col] == "#" or battlefield_pl[row][col] == "X":
             self.textdash.configure(state=NORMAL)
             self.textdash.insert(END, f"You have already fired a shell here!\n\n")
             self.textdash.configure(state=DISABLED)
@@ -191,32 +215,32 @@ class ShowAIGame:
 
 
     def fireSequence(self, shot):
-        global battlefield
-        global ships_foundered
+        global battlefield_pl
+        global ships_foundered_pl
         global ammo
 
         self.textdash.configure(state=NORMAL)
         row, col = self.checkShellShot(shot)
 
-        if battlefield[row][col] == "_":
+        if battlefield_pl[row][col] == "_":
             self.textdash.insert(END, f"You didn't hit anything, try again!\n\n")
-            battlefield[row][col] = "#"
-        elif battlefield[row][col] == "0":
+            battlefield_pl[row][col] = "#"
+        elif battlefield_pl[row][col] == "0":
             self.textdash.insert(END, f"You hit a ship!\n")
-            battlefield[row][col] = "X"
+            battlefield_pl[row][col] = "X"
             if self.checkShipFoundered(row, col):
                 self.textdash.insert(END, f"A ship was foundered!\n\n")
-                ships_foundered += 1
+                ships_foundered_pl += 1
 
         self.textdash.configure(state=DISABLED)
         ammo -= 1
 
 
     def checkShipFoundered(self, row, col):
-        global ship_positions
-        global battlefield
+        global ship_positions_pl
+        global battlefield_pl
 
-        for position in ship_positions:
+        for position in ship_positions_pl:
             start_row = position[0]
             end_row = position[1]
             start_col = position[2]
@@ -224,19 +248,19 @@ class ShowAIGame:
             if start_row <= row <= end_row and start_col <= col <= end_col:
                 for r in range(start_row, end_row):
                     for c in range(start_col, end_col):
-                        if battlefield[r][c] != "X":
+                        if battlefield_pl[r][c] != "X":
                             return False
 
         return True
 
 
     def checkIfGameOver(self):
-        global ships_foundered
+        global ships_foundered_pl
         global amount_of_ships
         global ammo
         global game_over
 
-        if amount_of_ships == ships_foundered:
+        if amount_of_ships == ships_foundered_pl:
             self.textdash.configure(state=NORMAL)
             self.textdash.delete('1.0', END)
             self.textdash.insert(END, "You won the game!\nCongratulations!")
@@ -280,11 +304,11 @@ class ShowAIGame:
         self.textdash.configure(state=NORMAL)
         self.textdash.insert(END, f"\nYou've got {ammo} rounds left!\n\n")
 
-        for i in battlefield:
+        for i in battlefield_pl:
             self.textdash.insert(END, f"{i}\n")
 
         self.textdash.configure(state=DISABLED)
-        self.jsonBattlefield({'battlefield': battlefield})
+        self.jsonBattlefield({'battlefield': battlefield_pl})
 
 
     def jsonBattlefield(self, item):

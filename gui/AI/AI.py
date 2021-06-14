@@ -7,7 +7,7 @@
 
 # ============ IMPORTS ============ #
 from tkinter import *
-from gui.AI.AIGrid import ShowAIFieldWindow
+from gui.AI.AIGrid import ShowAIFieldWindows
 import random
 import json
 
@@ -66,7 +66,7 @@ class ShowAIGame:
         self.whiteline.pack()
 
         self.button = Button(self.aiboard, text="Show Battlefield", font=("Arial bold", 14))
-        self.button.configure(height="2", width="18", command=ShowAIFieldWindow, highlightbackground=self.bg,foreground=self.bg)
+        self.button.configure(height="2", width="18", command=ShowAIFieldWindows, highlightbackground=self.bg,foreground=self.bg)
         self.button.pack()
 
         self.whiteline2 = Label(self.aiboard, font=("Arial 10 bold"))
@@ -202,19 +202,6 @@ class ShowAIGame:
         battlefield_ai = self.makeField(battlefield_ai, rows, cols)
         ship_positions_pl = self.makeShipPositions(battlefield_pl, ship_positions_pl, amount_of_ships, rows, cols)
         ship_positions_ai = self.makeShipPositions(battlefield_ai, ship_positions_ai, amount_of_ships, rows, cols)
-
-        print(f"SP Player: {ship_positions_pl}")
-        print(f"SP AI: {ship_positions_ai}")
-
-        print("\nBattlefield_Player:")
-        for i in battlefield_pl:
-            print(i)
-
-        print("\nBattlefield_AI:")
-        for i in battlefield_ai:
-            print(i)
-
-
 
 
     def checkShellShot(self, shot):

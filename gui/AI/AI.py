@@ -217,7 +217,7 @@ class ShowAIGame:
         return row, col
 
 
-    def fireSequence(self, battlefield, ship_positions, shot):
+    def fireSequence(self, battlefield, ship_positions, ships_foundered, shot):
         global ammo
 
         self.textdash.configure(state=NORMAL)
@@ -229,19 +229,16 @@ class ShowAIGame:
         elif battlefield[row][col] == "0":
             self.textdash.insert(END, f"You hit a ship!\n")
             battlefield[row][col] = "X"
-            if self.checkShipFoundered(row, col):
+            if self.checkShipFoundered(battlefield, ship_positions, row, col):
                 self.textdash.insert(END, f"A ship was foundered!\n\n")
-                ship_positions += 1
+                ships_foundered += 1
 
         self.textdash.configure(state=DISABLED)
         ammo -= 1
 
 
-    def checkShipFoundered(self, row, col):
-        global ship_positions_pl
-        global battlefield_pl
-
-        for position in ship_positions_pl:
+    def checkShipFoundered(self, battlefield, ship_positions, row, col):
+        for position in ship_positions:
             start_row = position[0]
             end_row = position[1]
             start_col = position[2]
@@ -249,7 +246,7 @@ class ShowAIGame:
             if start_row <= row <= end_row and start_col <= col <= end_col:
                 for r in range(start_row, end_row):
                     for c in range(start_col, end_col):
-                        if battlefield_pl[r][c] != "X":
+                        if battlefield[r][c] != "X":
                             return False
 
         return True
@@ -286,6 +283,7 @@ class ShowAIGame:
         global row_letters
         global battlefield_ai
         global ships_positions_ai
+        global ships_foundered_ai
 
         self.textdash.configure(state=NORMAL)
         self.textdash.delete('1.0', END)
@@ -296,9 +294,10 @@ class ShowAIGame:
             if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 3 or len(shot) <= 1:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
             else:
-                self.fireSequence(battlefield_ai, ship_positions_ai, shot)
-                self.insertText(battlefield_ai)
+                self.fireSequence(battlefield_ai, ship_positions_ai, ships_foundered_ai, shot)
+                self.insertText('battlefield_ai', battlefield_ai)
                 self.checkIfGameOver()
+                self.fireAIShot()
         elif game_over:
             self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
         else:
@@ -308,9 +307,29 @@ class ShowAIGame:
 
 
     def fireAIShot(self):
-        pass
+        global row_letters
+        global battlefield_pl
+        global ships_positions_pl
+        global ships_foundered_pl
 
-    def insertText(self, battlefield):
+        self.textdash.configure(state=NORMAL)
+
+        shot = random.choice(['A0','A1','A2','A3','A4','A5','A6','A7','A8','A9'])
+
+        if shot != '' and game_over != True:
+            self.fireSequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, shot)
+            self.insertText('battlefield_pl', battlefield_pl)
+            self.checkIfGameOver()
+        elif game_over:
+            self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
+        else:
+            self.textdash.insert(END, "That is not a valid coordinate, try again!")
+
+        self.textdash.configure(state=DISABLED)
+
+
+
+    def insertText(self, dataname, battlefield):
         global ammo
 
         self.textdash.configure(state=NORMAL)
@@ -320,7 +339,7 @@ class ShowAIGame:
             self.textdash.insert(END, f"{i}\n")
 
         self.textdash.configure(state=DISABLED)
-        self.jsonBattlefield({'battlefield': battlefield})
+        self.jsonBattlefield({dataname : battlefield})
 
 
     def jsonBattlefield(self, item):

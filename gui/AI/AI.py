@@ -328,6 +328,56 @@ class ShowAIGame:
         self.textdash.configure(state=DISABLED)
 
 
+    def Algorithm(self):
+        """
+        [[A4],[B4],[C4],[D4]] = ship location
+        [] = SHOTS
+        
+        1. 
+            if SHOTS == []:
+                fire random shot (shot_1)
+                if shot_1 was hit:
+                    add shot to SHOTS
+            
+        2. 
+            elif len(SHOTS) == 1:
+                add next shot to SHOTS
+                fire right of first hit (shot_2)
+                if shot_2 was hit:
+                    add shot_2 to SHOTS
+        
+        3. 
+            if shot_2 was miss or outside of grid:
+                fire above first hit (shot_3)
+            else:
+                fire newshot
+                newshot becomes shot_2
+                if foundered:
+                    reset variables
+        
+        4. 
+            if shot 3 was miss or outside of grid:
+                add next shot to SHOTS
+                fire below first hit (shot_4)
+            else:
+                fire newshot
+                newshot becomes shot_3
+                if foundered:
+                    reset variables
+                
+        5. 
+            if shot 4 was miss or outside of grid:
+                add next shot to SHOTS
+                fire left first hit (shot 3)
+            else:
+                fire newshot
+                newshot becomes shot_4
+                if foundered:
+                    reset variables
+
+        return "New Shot"
+        """
+
 
     def insertText(self, dataname, battlefield):
         global ammo

@@ -42,7 +42,7 @@ class ShowSingleplayer:
     def showSingleplayer(self):
         self.singleboard = Tk()
         self.singleboard.title("Battleship - Singleplayer Board")
-        self.singleboard.geometry("850x600")
+        self.singleboard.geometry("600x600")
         self.singleboard.configure(background=self.bg)
         self.singleboard.resizable(0, 0)
 

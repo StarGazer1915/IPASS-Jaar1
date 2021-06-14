@@ -53,11 +53,11 @@ class ShowAIGame:
     def showSingleplayer(self):
         self.aiboard = Tk()
         self.aiboard.title("Battleship - AI Game Board")
-        self.aiboard.geometry("850x600")
+        self.aiboard.geometry("550x600")
         self.aiboard.configure(background=self.bg)
         self.aiboard.resizable(0, 0)
 
-        self.label1 = Label(self.aiboard, text="AI Game", font=("Arial 40 bold"))
+        self.label1 = Label(self.aiboard, text="Player Versus AI", font=("Arial 40 bold"))
         self.label1.configure(background=self.bg, foreground=self.fg)
         self.label1.pack()
 
@@ -86,7 +86,7 @@ class ShowAIGame:
         self.whiteline3.pack()
 
         self.FireButton = Button(self.aiboard, text="Fire!", font=("Arial bold", 14))
-        self.FireButton.configure(height="2", width="8", command=self.fireShot, highlightbackground=self.bg, foreground=self.bg)
+        self.FireButton.configure(height="2", width="8", command=self.firePlayerShot, highlightbackground=self.bg, foreground=self.bg)
         self.FireButton.pack()
 
         self.whiteline4 = Label(self.aiboard, font=("Arial 10 bold"))
@@ -129,7 +129,6 @@ class ShowAIGame:
             direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
             ship_size = random.randint(ship_min_size, ship_max_size)
             result = self.checkPlaceOnGrid(battlefield, ship_positions, random_row, random_col, direction, ship_size)
-            print(f"Result: {result}")
             if not result:
                 pass
             elif len(result) > 1:
@@ -204,14 +203,13 @@ class ShowAIGame:
         ship_positions_ai = self.makeShipPositions(battlefield_ai, ship_positions_ai, amount_of_ships, rows, cols)
 
 
-    def checkShellShot(self, shot):
+    def checkShellShot(self, battlefield, shot):
         global row_letters
-        global battlefield_pl
 
         row, col = shot[0], shot[1:]
         row, col = row_letters.find(row), int(col)
 
-        if battlefield_pl[row][col] == "#" or battlefield_pl[row][col] == "X":
+        if battlefield[row][col] == "#" or battlefield[row][col] == "X":
             self.textdash.configure(state=NORMAL)
             self.textdash.insert(END, f"You have already fired a shell here!\n\n")
             self.textdash.configure(state=DISABLED)
@@ -219,23 +217,21 @@ class ShowAIGame:
         return row, col
 
 
-    def fireSequence(self, shot):
-        global battlefield_pl
-        global ships_foundered_pl
+    def fireSequence(self, battlefield, ship_positions, shot):
         global ammo
 
         self.textdash.configure(state=NORMAL)
-        row, col = self.checkShellShot(shot)
+        row, col = self.checkShellShot(battlefield, shot)
 
-        if battlefield_pl[row][col] == "_":
+        if battlefield[row][col] == "_":
             self.textdash.insert(END, f"You didn't hit anything, try again!\n\n")
-            battlefield_pl[row][col] = "#"
-        elif battlefield_pl[row][col] == "0":
+            battlefield[row][col] = "#"
+        elif battlefield[row][col] == "0":
             self.textdash.insert(END, f"You hit a ship!\n")
-            battlefield_pl[row][col] = "X"
+            battlefield[row][col] = "X"
             if self.checkShipFoundered(row, col):
                 self.textdash.insert(END, f"A ship was foundered!\n\n")
-                ships_foundered_pl += 1
+                ship_positions += 1
 
         self.textdash.configure(state=DISABLED)
         ammo -= 1
@@ -261,17 +257,23 @@ class ShowAIGame:
 
     def checkIfGameOver(self):
         global ships_foundered_pl
+        global ships_foundered_ai
         global amount_of_ships
         global ammo
         global game_over
 
-        if amount_of_ships == ships_foundered_pl:
+        if amount_of_ships == ships_foundered_ai:
             self.textdash.configure(state=NORMAL)
             self.textdash.delete('1.0', END)
-            self.textdash.insert(END, "You won the game!\nCongratulations!")
+            self.textdash.insert(END, "You won the game!\nYou foundered all enemy ships!")
             self.textdash.configure(state=DISABLED)
             game_over = True
-
+        elif amount_of_ships == ships_foundered_pl:
+            self.textdash.configure(state=NORMAL)
+            self.textdash.delete('1.0', END)
+            self.textdash.insert(END, "You lost the game!\nThe AI has sunk all your ships!")
+            self.textdash.configure(state=DISABLED)
+            game_over = True
         elif ammo <= 0:
             self.textdash.configure(state=NORMAL)
             self.textdash.delete('1.0', END)
@@ -280,8 +282,10 @@ class ShowAIGame:
             game_over = True
 
 
-    def fireShot(self):
+    def firePlayerShot(self):
         global row_letters
+        global battlefield_ai
+        global ships_positions_ai
 
         self.textdash.configure(state=NORMAL)
         self.textdash.delete('1.0', END)
@@ -292,8 +296,8 @@ class ShowAIGame:
             if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 3 or len(shot) <= 1:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
             else:
-                self.fireSequence(shot)
-                self.insertText()
+                self.fireSequence(battlefield_ai, ship_positions_ai, shot)
+                self.insertText(battlefield_ai)
                 self.checkIfGameOver()
         elif game_over:
             self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
@@ -303,17 +307,20 @@ class ShowAIGame:
         self.textdash.configure(state=DISABLED)
 
 
-    def insertText(self):
+    def fireAIShot(self):
+        pass
+
+    def insertText(self, battlefield):
         global ammo
 
         self.textdash.configure(state=NORMAL)
         self.textdash.insert(END, f"\nYou've got {ammo} rounds left!\n\n")
 
-        for i in battlefield_pl:
+        for i in battlefield:
             self.textdash.insert(END, f"{i}\n")
 
         self.textdash.configure(state=DISABLED)
-        self.jsonBattlefield({'battlefield': battlefield_pl})
+        self.jsonBattlefield({'battlefield': battlefield})
 
 
     def jsonBattlefield(self, item):

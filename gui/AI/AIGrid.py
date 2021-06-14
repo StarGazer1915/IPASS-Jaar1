@@ -27,9 +27,8 @@ class ShowAIFieldWindows:
         self.fieldboard.resizable(0,0)
 
         self.createPlayerField()
+        self.PlayerUpdate()
         self.showAIField()
-
-        #self.update()
 
         self.fieldboard.mainloop()
 
@@ -41,7 +40,7 @@ class ShowAIFieldWindows:
         self.aifieldboard.resizable(0,0)
 
         self.createAIField()
-        #self.update()
+        self.AIUpdate()
 
         self.aifieldboard.mainloop()
 
@@ -147,6 +146,10 @@ class ShowAIFieldWindows:
             row += 1
 
 
-    def update(self):
-        self.createField()
-        self.fieldboard.after(5000, self.update)
+    def PlayerUpdate(self):
+        self.createPlayerField()
+        self.fieldboard.after(5000, self.PlayerUpdate)
+
+    def AIUpdate(self):
+        self.createAIField()
+        self.aifieldboard.after(5000, self.AIUpdate)

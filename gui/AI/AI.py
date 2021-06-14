@@ -7,7 +7,7 @@
 
 # ============ IMPORTS ============ #
 from tkinter import *
-from gui.AI.AIGrid import ShowFieldWindow
+from gui.AI.AIGrid import ShowAIFieldWindow
 import random
 import json
 
@@ -33,60 +33,60 @@ class ShowAIGame:
 
     def __init__(self):
         global game_over
-        game_over = False
         global ships_foundered
+        game_over = False
         ships_foundered = 0
         self.loadJson()
         self.showSingleplayer()
 
     def showSingleplayer(self):
-        self.singleboard = Tk()
-        self.singleboard.title("Battleship - AI Game Board")
-        self.singleboard.geometry("850x600")
-        self.singleboard.configure(background=self.bg)
-        self.singleboard.resizable(0, 0)
+        self.aiboard = Tk()
+        self.aiboard.title("Battleship - AI Game Board")
+        self.aiboard.geometry("850x600")
+        self.aiboard.configure(background=self.bg)
+        self.aiboard.resizable(0, 0)
 
-        self.label1 = Label(self.singleboard, text="AI Game", font=("Arial 40 bold"))
+        self.label1 = Label(self.aiboard, text="AI Game", font=("Arial 40 bold"))
         self.label1.configure(background=self.bg, foreground=self.fg)
         self.label1.pack()
 
-        self.whiteline = Label(self.singleboard, font=("Arial 10 bold"))
+        self.whiteline = Label(self.aiboard, font=("Arial 10 bold"))
         self.whiteline.configure(background=self.bg, foreground=self.fg)
         self.whiteline.pack()
 
-        self.button = Button(self.singleboard, text="Show Battlefield", font=("Arial bold", 14))
-        self.button.configure(height="2", width="18", command=ShowFieldWindow, highlightbackground=self.bg,foreground=self.bg)
+        self.button = Button(self.aiboard, text="Show Battlefield", font=("Arial bold", 14))
+        self.button.configure(height="2", width="18", command=ShowAIFieldWindow, highlightbackground=self.bg,foreground=self.bg)
         self.button.pack()
 
-        self.whiteline2 = Label(self.singleboard, font=("Arial 10 bold"))
+        self.whiteline2 = Label(self.aiboard, font=("Arial 10 bold"))
         self.whiteline2.configure(background=self.bg, foreground=self.fg)
         self.whiteline2.pack()
 
-        self.label2 = Label(self.singleboard, text="Choose a coordinate:", font=("Arial 16 bold"))
+        self.label2 = Label(self.aiboard, text="Choose a coordinate:", font=("Arial 16 bold"))
         self.label2.configure(background=self.bg, foreground=self.fg)
         self.label2.pack()
 
-        self.FireEntry = Entry(self.singleboard, font=("Arial bold", 16))
+        self.FireEntry = Entry(self.aiboard, font=("Arial bold", 16))
         self.FireEntry.configure(highlightbackground=self.bg)
         self.FireEntry.pack()
 
-        self.whiteline3 = Label(self.singleboard, font=("Arial bold", 10))
+        self.whiteline3 = Label(self.aiboard, font=("Arial bold", 10))
         self.whiteline3.configure(background=self.bg, foreground=self.fg)
         self.whiteline3.pack()
 
-        self.FireButton = Button(self.singleboard, text="Fire!", font=("Arial bold", 14))
+        self.FireButton = Button(self.aiboard, text="Fire!", font=("Arial bold", 14))
         self.FireButton.configure(height="2", width="8", command=self.fireShot, highlightbackground=self.bg, foreground=self.bg)
         self.FireButton.pack()
 
-        self.whiteline4 = Label(self.singleboard, font=("Arial 10 bold"))
+        self.whiteline4 = Label(self.aiboard, font=("Arial 10 bold"))
         self.whiteline4.configure(background=self.bg, foreground=self.fg)
         self.whiteline4.pack()
 
-        self.label2 = Label(self.singleboard, text="====== Result: ======", font=("Arial 16 bold"))
+        self.label2 = Label(self.aiboard, text="====== Result: ======", font=("Arial 16 bold"))
         self.label2.configure(background=self.bg, foreground=self.fg)
         self.label2.pack()
 
-        self.textdash = Text(self.singleboard, font=("Arial", 16))
+        self.textdash = Text(self.aiboard, font=("Arial", 16))
         self.textdash.config(height="16", width="40", background=self.bg, foreground="White", highlightbackground="grey")
         self.textdash.tag_configure("center", justify='center')
         self.textdash.tag_add("center", 1.0, "end")
@@ -95,7 +95,7 @@ class ShowAIGame:
         self.createField()
         self.jsonBattlefield({'battlefield': battlefield})
 
-        self.singleboard.mainloop()
+        self.aiboard.mainloop()
 
 
     def createField(self):
@@ -288,7 +288,7 @@ class ShowAIGame:
 
 
     def jsonBattlefield(self, item):
-        with open('gui/SingleplayerGame.json', 'r+') as file:
+        with open('gui/AI/AIGame.json', 'r+') as file:
             data = json.load(file)
             data.update(item)
             file.seek(0)
@@ -301,7 +301,7 @@ class ShowAIGame:
         global amount_of_ships
         global ammo
 
-        with open('gui/SingleplayerGame.json', 'r') as file:
+        with open('gui/AI/AIGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
             amount_of_ships = data['amount_of_ships']

@@ -33,7 +33,7 @@ class ShowFieldWindow:
 
 
     def createField(self):
-        with open('gui/SingleplayerGame.json', 'r') as file:
+        with open('gui/AI/AIGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
             field = data['battlefield']

@@ -46,7 +46,7 @@ class ShowBoardGame:
         self.button.pack()
 
         self.button1 = Button(self.dashboard, text="PLAY AGAINST AI", font=("Arial bold", 14))
-        self.button1.configure(height="2", width="28", command=ShowAIGame, highlightbackground=self.bg, foreground=self.bg)
+        self.button1.configure(height="2", width="28", command=self.showAISetup, highlightbackground=self.bg, foreground=self.bg)
         self.button1.pack()
 
         self.dashboard.mainloop()
@@ -143,6 +143,83 @@ class ShowBoardGame:
 
                 self.setupboard.destroy()
                 ShowSingleplayer()
+
+        except TypeError as error:
+            print(error)
+            self.invalidWindow()
+        except ValueError:
+            pass
+
+
+    def showAISetup(self):
+        self.setupboard = Tk()
+        self.setupboard.title("Battleship - AI Setup")
+        self.setupboard.geometry("350x350")
+        self.setupboard.configure(background=self.bg)
+        self.setupboard.resizable(0, 0)
+
+        self.label1 = Label(self.setupboard, text="\nINSERT INFORMATION", font=("Arial 20 bold"))
+        self.label1.configure(background=self.bg, foreground=self.fg)
+        self.label1.pack()
+
+        self.whiteline = Label(self.setupboard, font=("Arial 10 bold"))
+        self.whiteline.configure(background=self.bg, foreground=self.fg)
+        self.whiteline.pack()
+
+        self.label2 = Label(self.setupboard, text="Battlefield size (10-26):", font=("Arial 14 bold"))
+        self.label2.configure(background=self.bg, foreground=self.fg)
+        self.label2.pack()
+        self.SizeEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.SizeEntry.configure(highlightbackground=self.bg)
+        self.SizeEntry.pack()
+
+        self.label3 = Label(self.setupboard, text="\nAmount of ships (1-10):", font=("Arial 14 bold"))
+        self.label3.configure(background=self.bg, foreground=self.fg)
+        self.label3.pack()
+        self.ShipsEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.ShipsEntry.configure(highlightbackground=self.bg)
+        self.ShipsEntry.pack()
+
+        self.label3 = Label(self.setupboard, text="\nAmount of shots:", font=("Arial 14 bold"))
+        self.label3.configure(background=self.bg, foreground=self.fg)
+        self.label3.pack()
+        self.AmmoEntry = Entry(self.setupboard, font=("Arial bold", 16))
+        self.AmmoEntry.configure(highlightbackground=self.bg)
+        self.AmmoEntry.pack()
+
+        self.whiteline3 = Label(self.setupboard, font=("Arial bold", 10))
+        self.whiteline3.configure(background=self.bg, foreground=self.fg)
+        self.whiteline3.pack()
+
+        self.button = Button(self.setupboard, text="Start", font=("Arial bold", 14))
+        self.button.configure(height="2", width="8", command=self.setupAICheck, highlightbackground=self.bg, foreground=self.bg)
+        self.button.pack()
+
+        self.setupboard.mainloop()
+
+
+    def setupAICheck(self):
+        size = self.SizeEntry.get()
+        ships = self.ShipsEntry.get()
+        ammo = self.AmmoEntry.get()
+        try:
+            if size == '' or ships == '' or ammo == '':
+                self.invalidWindow()
+
+            size, ships, ammo = int(size), int(ships), int(ammo)
+            if size > 26 or size < 10 or ships > 10 or ships <= 0 or ammo <= 0:
+                self.invalidWindow()
+            else:
+                data = {}
+                data['field_size'] = size
+                data['amount_of_ships'] = ships
+                data['ammo'] = ammo
+                with open('gui/AI/AIGame.json', 'w') as file:
+                    json.dump(data, file)
+                    file.close()
+
+                self.setupboard.destroy()
+                ShowAIGame()
 
         except TypeError as error:
             print(error)

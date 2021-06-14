@@ -120,7 +120,7 @@ class ShowAIGame:
         return battlefield
 
 
-    def makeShipPositions(self, ship_positions, amount_of_ships, rows, cols):
+    def makeShipPositions(self, battlefield, ship_positions, amount_of_ships, rows, cols):
         ships_deployed, ship_positions = 0, []
 
         while ships_deployed != amount_of_ships:
@@ -128,46 +128,15 @@ class ShowAIGame:
             random_col = random.randint(0, cols - 1)
             direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
             ship_size = random.randint(ship_min_size, ship_max_size)
-            if self.checkPlaceOnGrid(random_row, random_col, direction, ship_size):
-                ships_deployed += 1
+            result = self.checkPlaceOnGrid(battlefield, ship_positions, random_row, random_col, direction, ship_size)
+            print(f"Result: {result}")
+            if not result:
+                pass
+            elif len(result) > 1:
+                if result[0]:
+                    ships_deployed += 1
 
         return ship_positions
-
-
-    def createFields(self):
-        global field_size
-        global amount_of_ships
-        global ship_min_size
-        global ship_max_size
-        global battlefield_pl
-        global battlefield_ai
-        global ship_positions_pl
-        global ship_positions_ai
-
-        rows, cols = field_size, field_size
-        battlefield_pl, battlefield_ai = [], []
-
-        battlefield_pl = self.makeField(battlefield_pl, rows, cols)
-        battlefield_ai = self.makeField(battlefield_ai, rows, cols)
-        ship_positions_pl = self.makeShipPositions(ship_positions_pl, amount_of_ships, rows, cols)
-        ship_positions_ai = self.makeShipPositions(ship_positions_ai, amount_of_ships, rows, cols)
-
-
-    def checkFieldPlaceShip(self, battlefield, ship_positions, row_start, row_end, start_col, end_col):
-        positions_are_valid = True
-        for r in range(row_start, row_end):
-            for c in range(start_col, end_col):
-                if battlefield[r][c] != "_":
-                    positions_are_valid = False
-                    break
-
-        if positions_are_valid == True:
-            ship_positions.append([row_start, row_end, start_col, end_col])
-            for r in range(row_start, row_end):
-                for c in range(start_col, end_col):
-                    battlefield_pl[r][c] = "0"
-
-        return [battlefield, ship_positions]
 
 
     def checkPlaceOnGrid(self, battlefield, ship_positions, row, col, direction, length):
@@ -195,7 +164,57 @@ class ShowAIGame:
                 return False
             row_end = row + length
 
-        return self.checkFieldPlaceShip(battlefield, ship_positions, row_start, row_end, col_start, col_end)
+        result = self.checkFieldPlaceShip(battlefield, ship_positions, row_start, row_end, col_start, col_end)
+        return [result[0], result[1]]
+
+
+    def checkFieldPlaceShip(self, battlefield, ship_positions, row_start, row_end, start_col, end_col):
+        positions_are_valid = True
+        for r in range(row_start, row_end):
+            for c in range(start_col, end_col):
+                if battlefield[r][c] != "_":
+                    positions_are_valid = False
+                    break
+
+        if positions_are_valid == True:
+            ship_positions.append([row_start, row_end, start_col, end_col])
+            for r in range(row_start, row_end):
+                for c in range(start_col, end_col):
+                    battlefield[r][c] = "0"
+
+        return [positions_are_valid, ship_positions]
+
+
+    def createFields(self):
+        global field_size
+        global amount_of_ships
+        global ship_min_size
+        global ship_max_size
+        global battlefield_pl
+        global battlefield_ai
+        global ship_positions_pl
+        global ship_positions_ai
+
+        rows, cols = field_size, field_size
+        battlefield_pl, battlefield_ai = [], []
+
+        battlefield_pl = self.makeField(battlefield_pl, rows, cols)
+        battlefield_ai = self.makeField(battlefield_ai, rows, cols)
+        ship_positions_pl = self.makeShipPositions(battlefield_pl, ship_positions_pl, amount_of_ships, rows, cols)
+        ship_positions_ai = self.makeShipPositions(battlefield_ai, ship_positions_ai, amount_of_ships, rows, cols)
+
+        print(f"SP Player: {ship_positions_pl}")
+        print(f"SP AI: {ship_positions_ai}")
+
+        print("\nBattlefield_Player:")
+        for i in battlefield_pl:
+            print(i)
+
+        print("\nBattlefield_AI:")
+        for i in battlefield_ai:
+            print(i)
+
+
 
 
     def checkShellShot(self, shot):

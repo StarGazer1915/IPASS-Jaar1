@@ -11,7 +11,7 @@ import json
 # ================================= #
 
 
-class ShowFieldWindow:
+class ShowAIFieldWindow:
     # ======== Visuals ======== #
     bg, fg = "#0033cc", "#ffffff"
     sea, hit = '#003399', '#ff0000'

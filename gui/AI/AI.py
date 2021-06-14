@@ -104,9 +104,11 @@ class ShowAIGame:
         self.textdash.pack()
 
         self.createFields()
-        self.jsonBattlefield({'battlefield': battlefield_pl})
+        self.jsonBattlefield({'battlefield_pl': battlefield_pl})
+        self.jsonBattlefield({'battlefield_ai': battlefield_ai})
 
         self.aiboard.mainloop()
+
 
     def makeField(self, battlefield, rows, cols):
         for r in range(rows):
@@ -116,6 +118,7 @@ class ShowAIGame:
             battlefield.append(row)
 
         return battlefield
+
 
     def makeShipPositions(self, ship_positions, amount_of_ships, rows, cols):
         ships_deployed, ship_positions = 0, []
@@ -146,32 +149,28 @@ class ShowAIGame:
 
         battlefield_pl = self.makeField(battlefield_pl, rows, cols)
         battlefield_ai = self.makeField(battlefield_ai, rows, cols)
-
         ship_positions_pl = self.makeShipPositions(ship_positions_pl, amount_of_ships, rows, cols)
         ship_positions_ai = self.makeShipPositions(ship_positions_ai, amount_of_ships, rows, cols)
 
 
-    def checkFieldPlaceShip(self, row_start, row_end, start_col, end_col):
-        global battlefield_pl
-        global ship_positions_pl
-
+    def checkFieldPlaceShip(self, battlefield, ship_positions, row_start, row_end, start_col, end_col):
         positions_are_valid = True
         for r in range(row_start, row_end):
             for c in range(start_col, end_col):
-                if battlefield_pl[r][c] != "_":
+                if battlefield[r][c] != "_":
                     positions_are_valid = False
                     break
 
         if positions_are_valid == True:
-            ship_positions_pl.append([row_start, row_end, start_col, end_col])
+            ship_positions.append([row_start, row_end, start_col, end_col])
             for r in range(row_start, row_end):
                 for c in range(start_col, end_col):
                     battlefield_pl[r][c] = "0"
 
-        return positions_are_valid
+        return [battlefield, ship_positions]
 
 
-    def checkPlaceOnGrid(self, row, col, direction, length):
+    def checkPlaceOnGrid(self, battlefield, ship_positions, row, col, direction, length):
         global field_size
 
         row_start, row_end, col_start, col_end = row, row+1, col, col+1
@@ -196,7 +195,7 @@ class ShowAIGame:
                 return False
             row_end = row + length
 
-        return self.checkFieldPlaceShip(row_start, row_end, col_start, col_end)
+        return self.checkFieldPlaceShip(battlefield, ship_positions, row_start, row_end, col_start, col_end)
 
 
     def checkShellShot(self, shot):

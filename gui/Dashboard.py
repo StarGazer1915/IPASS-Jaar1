@@ -8,6 +8,7 @@
 # ============ IMPORTS ============ #
 from tkinter import *
 from gui.Singleplayer import ShowSingleplayer
+from gui.AI.AI import ShowAIGame
 import json
 # ================================= #
 
@@ -45,7 +46,7 @@ class ShowBoardGame:
         self.button.pack()
 
         self.button1 = Button(self.dashboard, text="PLAY AGAINST AI", font=("Arial bold", 14))
-        self.button1.configure(height="2", width="28", highlightbackground=self.bg, foreground=self.bg)
+        self.button1.configure(height="2", width="28", command=ShowAIGame, highlightbackground=self.bg, foreground=self.bg)
         self.button1.pack()
 
         self.dashboard.mainloop()
@@ -136,7 +137,7 @@ class ShowBoardGame:
                 data['field_size'] = size
                 data['amount_of_ships'] = ships
                 data['ammo'] = ammo
-                with open('gui/game.json', 'w') as file:
+                with open('gui/SingleplayerGame.json', 'w') as file:
                     json.dump(data, file)
                     file.close()
 

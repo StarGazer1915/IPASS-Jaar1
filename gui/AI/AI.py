@@ -7,7 +7,7 @@
 
 # ============ IMPORTS ============ #
 from tkinter import *
-from gui.Grid import ShowFieldWindow
+from gui.AI.AIGrid import ShowFieldWindow
 import random
 import json
 
@@ -25,7 +25,7 @@ row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # ================================= #
 
 
-class ShowSingleplayer:
+class ShowAIGame:
     # ======== Visuals ======== #
     bg = "#0033cc"
     fg = "#ffffff"
@@ -41,12 +41,12 @@ class ShowSingleplayer:
 
     def showSingleplayer(self):
         self.singleboard = Tk()
-        self.singleboard.title("Battleship - Singleplayer Board")
+        self.singleboard.title("Battleship - AI Game Board")
         self.singleboard.geometry("850x600")
         self.singleboard.configure(background=self.bg)
         self.singleboard.resizable(0, 0)
 
-        self.label1 = Label(self.singleboard, text="Singleplayer", font=("Arial 40 bold"))
+        self.label1 = Label(self.singleboard, text="AI Game", font=("Arial 40 bold"))
         self.label1.configure(background=self.bg, foreground=self.fg)
         self.label1.pack()
 
@@ -288,7 +288,7 @@ class ShowSingleplayer:
 
 
     def jsonBattlefield(self, item):
-        with open('gui/game.json', 'r+') as file:
+        with open('gui/SingleplayerGame.json', 'r+') as file:
             data = json.load(file)
             data.update(item)
             file.seek(0)
@@ -301,7 +301,7 @@ class ShowSingleplayer:
         global amount_of_ships
         global ammo
 
-        with open('gui/game.json', 'r') as file:
+        with open('gui/SingleplayerGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
             amount_of_ships = data['amount_of_ships']

@@ -10,7 +10,7 @@ import random
 import json
 
 # ========== GLOBALS ========== #
-with open('gui/game.json', 'r') as file:
+with open('gui/SingleplayerGame.json', 'r') as file:
     data = json.load(file)
     try:
         field_size = data['field_size']

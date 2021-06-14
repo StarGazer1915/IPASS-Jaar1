@@ -33,8 +33,8 @@ class ShowSingleplayer:
 
     def __init__(self):
         global game_over
-        game_over = False
         global ships_foundered
+        game_over = False
         ships_foundered = 0
         self.loadJson()
         self.showSingleplayer()
@@ -288,7 +288,7 @@ class ShowSingleplayer:
 
 
     def jsonBattlefield(self, item):
-        with open('gui/game.json', 'r+') as file:
+        with open('gui/SingleplayerGame.json', 'r+') as file:
             data = json.load(file)
             data.update(item)
             file.seek(0)
@@ -301,7 +301,7 @@ class ShowSingleplayer:
         global amount_of_ships
         global ammo
 
-        with open('gui/game.json', 'r') as file:
+        with open('gui/SingleplayerGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
             amount_of_ships = data['amount_of_ships']

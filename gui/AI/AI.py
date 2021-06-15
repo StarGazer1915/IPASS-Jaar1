@@ -139,7 +139,7 @@ class ShowAIGame:
         while ships_deployed != amount_of_ships:
             random_row = random.randint(0, rows - 1)
             random_col = random.randint(0, cols - 1)
-            direction = random.choice(["LEFT", "RIGHT"])
+            direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
             ship_size = random.randint(ship_min_size, ship_max_size)
             result = self.checkPlaceOnGrid(battlefield, ship_positions, random_row, random_col, direction, ship_size)
             if not result:
@@ -166,15 +166,15 @@ class ShowAIGame:
                 return False
             col_end = col + length
 
-        # elif direction == "UP":
-        #     if row - length < 0:
-        #         return False
-        #     row_start = row - length + 1
-        #
-        # elif direction == "DOWN":
-        #     if row + length >= field_size:
-        #         return False
-        #     row_end = row + length
+        elif direction == "UP":
+            if row - length < 0:
+                return False
+            row_start = row - length + 1
+
+        elif direction == "DOWN":
+            if row + length >= field_size:
+                return False
+            row_end = row + length
 
         result = self.checkFieldPlaceShip(battlefield, ship_positions, row_start, row_end, col_start, col_end)
         return [result[0], result[1]]
@@ -374,7 +374,7 @@ class ShowAIGame:
         print(f"\n-- current_ship: {current_ship} --")
         print(f"-- ai_shots_missed: {ai_shots_missed} --")
 
-        if len(current_ship) == 0:
+        if current_ship == []:
             while True:
                 ai_shell = random.choice(used_letters) + str(random.randint(0, field_size-1))
                 if ai_shell not in ai_shots_missed:
@@ -391,32 +391,37 @@ class ShowAIGame:
 
         elif len(current_ship) >= 1:
 
-            print(f"SHOTCOUNTER: {ai_shot_counter}")
             if ai_shot_counter <= 4: # Fire left
                 newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) - 1)
                 ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
-                print(f"ai_prev_shell: {ai_prev_shell[0]}, LEFT = {newshot}, status = {ships_foundered_pl}")
+                print(f"PREVSHELL: {ai_prev_shell[0]}, LEFT: {newshot}, Status: {ships_foundered_pl}")
 
                 if ai_prev_shell[0] == 'hit':
                     current_ship.append(ai_prev_shell[1])
                 elif ai_prev_shell[0] == 'miss':
+                    ai_shots_missed.append(ai_prev_shell[1])
+                    ai_shot_counter = 4
+                elif ai_prev_shell[0] == '':
                     ai_shot_counter = 4
 
                 ai_shot_counter += 1
+
                 if ai_shot_counter == 5:
                     ai_prev_shell[1] = current_ship[0]
                     return
 
             else:
-                print(f"SHOTCOUNTER: {ai_shot_counter}")
                 if ai_shot_counter <= 8: # Fire right
                     newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) + 1)
                     ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
-                    print(f"ai_prev_shell: {ai_prev_shell[0]}, RIGHT = {newshot}, status = {ships_foundered_pl}")
+                    print(f"PREVSHELL: {ai_prev_shell[0]}, RIGHT: {newshot}, Status: {ships_foundered_pl}")
 
                     if ai_prev_shell[0] == 'hit':
                         current_ship.append(ai_prev_shell[1])
                     elif ai_prev_shell[0] == 'miss':
+                        ai_shots_missed.append(ai_prev_shell[1])
+                        ai_shot_counter = 8
+                    elif ai_prev_shell[0] == '':
                         ai_shot_counter = 8
 
                     ai_shot_counter += 1
@@ -425,9 +430,52 @@ class ShowAIGame:
                         return
 
                 else:
-                    current_ship = []
-                    return
-                
+                    if ai_shot_counter <= 12:  # Fire above
+                        top = used_letters[used_letters.index(ai_prev_shell[1][0]) - 1]
+                        newshot = top + str(int(ai_prev_shell[1][1]) + 1)
+                        ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
+                        print(f"PREVSHELL: {ai_prev_shell[0]}, ABOVE: {newshot}, Status: {ships_foundered_pl}")
+
+                        if ai_prev_shell[0] == 'hit':
+                            current_ship.append(ai_prev_shell[1])
+                        elif ai_prev_shell[0] == 'miss':
+                            ai_shots_missed.append(ai_prev_shell[1])
+                            ai_shot_counter = 12
+                        elif ai_prev_shell[0] == '':
+                            ai_shot_counter = 12
+
+                        ai_shot_counter += 1
+                        if ai_shot_counter == 13:
+                            ai_prev_shell[1] = current_ship[0]
+                            return
+
+                    else:
+                        if ai_shot_counter <= 16:  # Fire downwards
+                            bottom = used_letters[used_letters.index(ai_prev_shell[1][0]) + 1]
+                            newshot = bottom + str(int(ai_prev_shell[1][1]) + 1)
+                            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl,
+                                                                newshot)
+                            print(f"PREVSHELL: {ai_prev_shell[0]}, RIGHT: {newshot}, Status: {ships_foundered_pl}")
+
+                            if ai_prev_shell[0] == 'hit':
+                                current_ship.append(ai_prev_shell[1])
+                            elif ai_prev_shell[0] == 'miss':
+                                ai_shots_missed.append(ai_prev_shell[1])
+                                ai_shot_counter = 16
+                            elif ai_prev_shell[0] == '':
+                                ai_shot_counter = 16
+
+                            ai_shot_counter += 1
+                            if ai_shot_counter == 17:
+                                ai_prev_shell[1] = current_ship[0]
+                                return
+
+                        else:
+                            current_ship = []
+                            ai_shot_counter = 0
+
+
+
 
 
     def fireAISequence(self, battlefield, ship_positions, ships_foundered, shot):
@@ -442,8 +490,11 @@ class ShowAIGame:
             result[0] = 'miss'
             battlefield[row][col] = "#"
         elif battlefield[row][col] == "#":
-            result[0] = 'miss'
+            result[0] = 'already_missed'
             battlefield[row][col] = "#"
+        elif battlefield[row][col] == "X":
+            result[0] = 'already_hit'
+            battlefield[row][col] = "X"
         elif battlefield[row][col] == "0":
             result[0] = 'hit'
             battlefield[row][col] = "X"

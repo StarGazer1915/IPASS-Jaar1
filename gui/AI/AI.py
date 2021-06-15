@@ -25,7 +25,9 @@ battlefield_pl = [[]]
 battlefield_ai = [[]]
 ship_positions_pl = [[]]
 ship_positions_ai = [[]]
-ai_shots = []
+ai_shots_fired = []
+ai_shell = ''
+ai_prev_shell = ['','']
 
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -50,10 +52,10 @@ class ShowAIGame:
         ai_shots = []
 
         self.loadJson()
-        self.showSingleplayer()
+        self.showAIvsPlayer()
 
 
-    def showSingleplayer(self):
+    def showAIvsPlayer(self):
         self.aiboard = Tk()
         self.aiboard.title("Battleship - AI Game Board")
         self.aiboard.geometry("550x600")
@@ -107,6 +109,7 @@ class ShowAIGame:
         self.textdash.pack()
 
         self.createFields()
+        self.makeFirstAIShot()
         self.jsonBattlefield({'battlefield_pl': battlefield_pl})
         self.jsonBattlefield({'battlefield_ai': battlefield_ai})
 
@@ -310,27 +313,22 @@ class ShowAIGame:
 
 
     def fireAIShot(self):
+        global ai_shell
         global row_letters
         global battlefield_pl
         global ships_positions_pl
         global ships_foundered_pl
 
-        self.textdash.configure(state=NORMAL)
-
         shot = self.randomAlgorithm()
 
-        self.Algorithm()
-
         if shot != '' and game_over != True:
-            self.fireSequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, shot)
-            self.insertText('battlefield_pl', battlefield_pl)
+            self.Algorithm(ai_shell)
+            self.jsonBattlefield({'battlefield_pl' : battlefield_pl})
             self.checkIfGameOver()
         elif game_over:
-            self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
+            print("The game has ended!\nClose the windows and play again\nfrom the main menu!")
         else:
-            self.textdash.insert(END, "That is not a valid coordinate, try again!")
-
-        self.textdash.configure(state=DISABLED)
+            print("That is not a valid coordinate, try again!")
 
 
     def randomAlgorithm(self):
@@ -344,7 +342,17 @@ class ShowAIGame:
             return newshot
 
 
-    def Algorithm(self):
+    def makeFirstAIShot(self):
+        global ai_shell
+        global ai_shots_fired
+        global field_size
+        global row_letters
+
+        used_letters = row_letters[:field_size]
+        ai_shell = random.choice(used_letters) + str(random.randint(0, field_size-1))
+
+
+    def Algorithm(self, previous_shot):
         """
         [[A4],[B4],[C4],[D4]] = ship location
         [] = SHOTS
@@ -394,6 +402,58 @@ class ShowAIGame:
         json add future shot
         return "New Shot"
         """
+        global ai_shell
+        global ai_prev_shell
+        global ai_shots_fired
+        global row_letters
+        global field_size
+
+        used_letters = row_letters[:field_size]
+
+        print(ai_shell)
+        print(ai_shots_fired)
+
+        if ai_shots_fired == []:
+            ai_shell = random.choice(used_letters) + str(random.randint(0, field_size-1))
+            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
+            return ai_shell
+
+        elif len(ai_shots_fired) == 1:
+            shot = ai_shots_fired[0]
+
+            ai_shell = shot[0] + str(int(shot[1]) + 1)
+            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl,  ai_shell)
+
+            print(ai_prev_shell)
+            for i in battlefield_pl:
+                print(i)
+
+
+
+
+
+    def fireAISequence(self, battlefield, ship_positions, ships_foundered, shot):
+        global ai_shots_fired
+        global ammo
+
+        result = ['','','']
+        result[1] = shot
+
+        row, col = self.checkShellShot(battlefield, shot)
+
+        if battlefield[row][col] == "_":
+            result[0] = 'miss'
+            battlefield[row][col] = "#"
+        elif battlefield[row][col] == "0":
+            result[0] = 'hit'
+            ai_shots_fired.append(shot)
+            battlefield[row][col] = "X"
+            if self.checkShipFoundered(battlefield, ship_positions, row, col):
+                result[2] = 'foundered'
+                ships_foundered += 1
+
+        ammo -= 1
+        return result
 
 
 

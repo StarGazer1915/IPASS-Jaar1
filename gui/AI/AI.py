@@ -25,10 +25,11 @@ battlefield_pl = [[]]
 battlefield_ai = [[]]
 ship_positions_pl = [[]]
 ship_positions_ai = [[]]
-ai_shots_hit = []
+current_ship = []
 ai_shots_missed = []
 ai_shell = ''
 ai_prev_shell = ['','']
+miss_counter = 0
 
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -47,12 +48,14 @@ class ShowAIGame:
 
         global ships_foundered_pl
         global ships_foundered_ai
-        global ai_shots_hit
+        global current_ship
         global ai_counter
+        global miss_counter
         ships_foundered_pl = 0
         ships_foundered_ai = 0
-        ai_shots_hit = []
+        current_ship = []
         ai_counter = 0
+        miss_counter = 0
 
         self.loadJson()
         self.showAIvsPlayer()
@@ -347,7 +350,7 @@ class ShowAIGame:
 
     def makeFirstAIShot(self):
         global ai_shell
-        global ai_shots_hit
+        global current_ship
         global field_size
         global row_letters
 
@@ -356,68 +359,20 @@ class ShowAIGame:
 
 
     def Algorithm(self):
-        """
-        [[A4],[B4],[C4],[D4]] = ship location
-        [] = SHOTS
-        
-        1. 
-            if SHOTS == []:
-                fire random shot (shot_1)
-                if shot_1 was hit:
-                    add shot to SHOTS
-            
-        2. 
-            elif len(SHOTS) == 1:
-                add next shot to SHOTS
-                fire right of first hit (shot_2)
-                if shot_2 was hit:
-                    add shot_2 to SHOTS
-        
-        3. 
-            if shot_2 was miss or outside of grid:
-                fire above first hit (shot_3)
-            else:
-                fire newshot
-                newshot becomes shot_2
-                if foundered:
-                    reset variables
-        
-        4. 
-            if shot 3 was miss or outside of grid:
-                add next shot to SHOTS
-                fire below first hit (shot_4)
-            else:
-                fire newshot
-                newshot becomes shot_3
-                if foundered:
-                    reset variables
-                
-        5. 
-            if shot 4 was miss or outside of grid:
-                add next shot to SHOTS
-                fire left first hit (shot 3)
-            else:
-                fire newshot
-                newshot becomes shot_4
-                if foundered:
-                    reset variables
-
-        json add future shot
-        return "New Shot"
-        """
         global ai_shell
         global ai_prev_shell
-        global ai_shots_hit
+        global current_ship
         global ai_shots_missed
+        global miss_counter
         global row_letters
         global field_size
 
         used_letters = row_letters[:field_size]
 
-        print(f"\n-- ai_shots_hit: {ai_shots_hit} --")
+        print(f"\n-- current_ship: {current_ship} --")
         print(f"-- ai_shots_missed: {ai_shots_missed} --")
 
-        if len(ai_shots_hit) == 0:
+        if len(current_ship) == 0:
             while True:
                 ai_shell = random.choice(used_letters) + str(random.randint(0, field_size-1))
                 if ai_shell not in ai_shots_missed:
@@ -425,41 +380,83 @@ class ShowAIGame:
 
             ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
             if ai_prev_shell[0] == 'hit':
-                ai_shots_hit.append(ai_prev_shell[1])
+                current_ship.append(ai_prev_shell[1])
             else:
                 ai_shots_missed.append(ai_prev_shell[1])
 
-            print(f"ai_shell: {ai_shell}")
-            print(f"ai_prev_shell: {ai_prev_shell}")
+            print(f"ai_shell: {ai_shell} (FINAL)")
+            print(f"ai_prev_shell: {ai_prev_shell} (FINAL)")
 
-        elif len(ai_shots_hit) == 1:
-            right = ai_shots_hit[0][0] + str(int(ai_shots_hit[0][1]) + 1)
-            left = ai_shots_hit[0][0] + str(int(ai_shots_hit[0][1]) - 1)
+        elif len(current_ship) >= 1:
+            direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
 
-            top_letter = used_letters.index(ai_shots_hit[0][0]) + 1
-            bottom_letter = used_letters.index(ai_shots_hit[0][0]) - 1
-            top = (used_letters[top_letter]) + str(ai_shots_hit[0][1])
-            bottom = (used_letters[bottom_letter]) + str(ai_shots_hit[0][1])
+            if direction == "LEFT":
+                try:
+                    newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) - 1)
+                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
+                    print(f"ai_prev_shell: {ai_prev_shell[0]}, LEFT = {newshot}")
+                    if ai_prev_shell[0] == 'miss':
+                        miss_counter += 1
+                    if ai_prev_shell[2] == 'foundered':
+                        current_ship, miss_counter = [], 0
+                    if miss_counter == 2:
+                        ai_prev_shell[1] = current_ship[0]
+                        miss_counter = 0
+                except:
+                    ai_prev_shell[1] = current_ship[0]
+                    miss_counter = 0
 
-            if ai_prev_shell[0] == 'miss' and right not in ai_shots_missed and right not in ai_shots_hit:
-                ai_shell = right
-                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
-                return
-            elif ai_prev_shell[0] == 'miss' and left not in ai_shots_missed and left not in ai_shots_hit:
-                ai_shell = left
-                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
-                return
-            elif ai_prev_shell[0] == 'miss' and top not in ai_shots_missed and top not in ai_shots_hit:
-                ai_shell = top
-                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
-                return
-            elif ai_prev_shell[0] == 'miss' and bottom not in ai_shots_missed and bottom not in ai_shots_hit:
-                ai_shell = bottom
-                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
-                return
-            else:
-                print("PASSED")
-                pass
+            elif direction == "RIGHT":
+                try:
+                    newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) + 1)
+                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
+                    print(f"ai_prev_shell: {ai_prev_shell[0]}, RIGHT = {newshot}")
+                    if ai_prev_shell[0] == 'miss':
+                        miss_counter += 1
+                    if ai_prev_shell[2] == 'foundered':
+                        current_ship, miss_counter = [], 0
+                    if miss_counter == 2:
+                        ai_prev_shell[1] = current_ship[0]
+                        miss_counter = 0
+                except:
+                    ai_prev_shell[1] = current_ship[0]
+                    miss_counter = 0
+
+            elif direction == "UP":
+                try:
+                    top =  used_letters[used_letters.index(ai_prev_shell[1][0]) - 1]
+                    newshot = top + ai_prev_shell[1][1]
+                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
+                    print(f"ai_prev_shell: {ai_prev_shell[0]}, UP = {newshot}")
+                    if ai_prev_shell[0] == 'miss':
+                        miss_counter += 1
+                    if ai_prev_shell[2] == 'foundered':
+                        current_ship, miss_counter = [], 0
+                    if miss_counter == 2:
+                        ai_prev_shell[1] = current_ship[0]
+                        miss_counter = 0
+                except:
+                    ai_prev_shell[1] = current_ship[0]
+                    miss_counter = 0
+
+            elif direction == "DOWN":
+                try:
+                    bottom = used_letters[used_letters.index(ai_prev_shell[1][0]) + 1]
+                    newshot = bottom + ai_prev_shell[1][1]
+                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
+                    print(f"ai_prev_shell: {ai_prev_shell[0]}, DOWN = {newshot}")
+                    if ai_prev_shell[0] == 'miss':
+                        miss_counter += 1
+                    if ai_prev_shell[2] == 'foundered':
+                        current_ship, miss_counter = [], 0
+                    if miss_counter == 2:
+                        ai_prev_shell[1] = current_ship[0]
+                        miss_counter = 0
+                except:
+                    ai_prev_shell[1] = current_ship[0]
+                    miss_counter = 0
+
+            return
 
 
 
@@ -474,6 +471,9 @@ class ShowAIGame:
         row, col = self.checkShellShot(battlefield, shot)
 
         if battlefield[row][col] == "_":
+            result[0] = 'miss'
+            battlefield[row][col] = "#"
+        elif battlefield[row][col] == "#":
             result[0] = 'miss'
             battlefield[row][col] = "#"
         elif battlefield[row][col] == "0":

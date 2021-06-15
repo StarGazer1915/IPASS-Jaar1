@@ -30,7 +30,6 @@ ai_shots_missed = []
 ai_shell = ''
 ai_prev_shell = ['','']
 ai_shot_counter = 0
-miss_counter = 0
 
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -51,12 +50,10 @@ class ShowAIGame:
         global ships_foundered_ai
         global current_ship
         global ai_shot_counter
-        global miss_counter
         ships_foundered_pl = 0
         ships_foundered_ai = 0
         current_ship = []
         ai_shot_counter = 0
-        miss_counter = 0
 
         self.loadJson()
         self.showAIvsPlayer()
@@ -116,7 +113,6 @@ class ShowAIGame:
         self.textdash.pack()
 
         self.createFields()
-        self.makeFirstAIShot()
         self.jsonBattlefield({'battlefield_pl': battlefield_pl})
         self.jsonBattlefield({'battlefield_ai': battlefield_ai})
 
@@ -311,6 +307,7 @@ class ShowAIGame:
                 self.insertText('battlefield_ai', battlefield_ai)
                 self.checkIfGameOver()
                 self.fireAIShot()
+                self.checkIfGameOver()
         elif game_over:
             self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
         else:
@@ -326,10 +323,8 @@ class ShowAIGame:
         global ships_positions_pl
         global ships_foundered_pl
 
-        shot = self.randomAlgorithm()
-
-        if shot != '' and game_over != True:
-            self.AIWidthShooting()
+        if not game_over:
+            self.AI(battlefield_pl, ship_positions_pl, ships_foundered_pl)
             self.jsonBattlefield({'battlefield_pl' : battlefield_pl})
             self.checkIfGameOver()
         elif game_over:
@@ -338,40 +333,18 @@ class ShowAIGame:
             print("That is not a valid coordinate, try again!")
 
 
-    def randomAlgorithm(self):
-        global row_letters
-        global field_size
-
-        used_letters = row_letters[:field_size]
-
-        if not game_over:
-            newshot = random.choice(used_letters) + str(random.randint(0, field_size))
-            return newshot
-
-
-    def makeFirstAIShot(self):
-        global ai_shell
-        global current_ship
-        global field_size
-        global row_letters
-
-        used_letters = row_letters[:field_size]
-        ai_shell = random.choice(used_letters) + str(random.randint(0, field_size-1))
-
-
-    def AIWidthShooting(self):
+    def AI(self, battlefield_pl, ship_positions_pl, ships_foundered_pl):
         global ai_shell
         global ai_prev_shell
         global current_ship
         global ai_shots_missed
         global ai_shot_counter
-        global miss_counter
         global row_letters
         global field_size
 
         used_letters = row_letters[:field_size]
 
-        print(f"\n-- current_ship: {current_ship} --")
+        print(f"\n-- current_ship: {current_ship} | Ships foundered: {ships_foundered_pl} | Amount of ships: {amount_of_ships} --")
         print(f"-- ai_shots_missed: {ai_shots_missed} --")
 
         if current_ship == []:
@@ -380,111 +353,139 @@ class ShowAIGame:
                 if ai_shell not in ai_shots_missed:
                     break
 
-            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, ai_shell)
+            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ai_shell)
             if ai_prev_shell[0] == 'hit':
                 current_ship.append(ai_prev_shell[1])
             else:
                 ai_shots_missed.append(ai_prev_shell[1])
 
-            print(f"ai_shell: {ai_shell} | ai_prev_shell: {ai_prev_shell}")
+            print(f"PREVSHELL: {ai_prev_shell}, RANDOM")
 
 
         # ---- FIRST POSITION FOUND, START FOCUS FIRING ---- #
         elif len(current_ship) >= 1:
             print(f"SHOTS: {ai_shot_counter}")
 
-            if ai_shot_counter <= 4: # Fire left
-                newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) - 1)
-                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
-                print(f"PREVSHELL: {ai_prev_shell[0]}, LEFT: {newshot}, Status: {ai_prev_shell[2]}")
-
-                if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
-                    current_ship.append(ai_prev_shell[1])
-                elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
-                    ai_shots_missed.append(ai_prev_shell[1])
-                    ai_shot_counter = 4
-                elif ai_prev_shell[0] == '':
-                    ai_shot_counter = 4
-
-                if ai_prev_shell[2] == 'foundered':
-                    current_ship = []
-                    ai_shot_counter = 0
-
-                ai_shot_counter += 1
-                if ai_shot_counter == 5:
-                    ai_prev_shell[1] = current_ship[0]
-                    return
-
-            else:
-                if ai_shot_counter <= 8: # Fire right
-                    newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) + 1)
-                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
-                    print(f"PREVSHELL: {ai_prev_shell[0]}, RIGHT: {newshot}, Status: {ai_prev_shell[2]}")
+            # Fire left until a shot misses, should it exit the grid it will return to it's originial hit. #
+            if ai_shot_counter <= 4:
+                try:
+                    newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) - 1)
+                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                    print(f"PREVSHELL: {ai_prev_shell[0]}, LEFT: {newshot}, Status: {ai_prev_shell[2]}")
 
                     if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
-                        current_ship.append(ai_prev_shell[1])
+                        ai_shots_missed.append(ai_prev_shell[1])
                     elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
                         ai_shots_missed.append(ai_prev_shell[1])
-                        ai_shot_counter = 8
+                        ai_shot_counter = 4
                     elif ai_prev_shell[0] == '':
-                        ai_shot_counter = 8
+                        ai_shot_counter = 4
 
                     if ai_prev_shell[2] == 'foundered':
                         current_ship = []
                         ai_shot_counter = 0
 
                     ai_shot_counter += 1
-                    if ai_shot_counter == 9:
+                    if ai_shot_counter == 5:
                         ai_prev_shell[1] = current_ship[0]
                         return
 
-                else:
-                    if ai_shot_counter <= 12:  # Fire above
-                        top = used_letters[used_letters.index(ai_prev_shell[1][0]) - 1]
-                        newshot = top + ai_prev_shell[1][1]
-                        ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
-                        print(f"PREVSHELL: {ai_prev_shell[0]}, ABOVE: {newshot}, Status: {ai_prev_shell[2]}")
+                except IndexError:
+                    print("Algorithm went out of grid. Resetting...")
+                    ai_shot_counter = 5
+                    ai_prev_shell[1] = current_ship[0]
+
+            else:
+                # Fire right until a shot misses, should it exit the grid it will return to it's originial hit. #
+                if ai_shot_counter <= 8: # Fire right
+                    try:
+                        newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) + 1)
+                        ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                        print(f"PREVSHELL: {ai_prev_shell[0]}, RIGHT: {newshot}, Status: {ai_prev_shell[2]}")
 
                         if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
-                            current_ship.append(ai_prev_shell[1])
+                            ai_shots_missed.append(ai_prev_shell[1])
                         elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
                             ai_shots_missed.append(ai_prev_shell[1])
-                            ai_shot_counter = 12
+                            ai_shot_counter = 8
                         elif ai_prev_shell[0] == '':
-                            ai_shot_counter = 12
+                            ai_shot_counter = 8
 
                         if ai_prev_shell[2] == 'foundered':
                             current_ship = []
                             ai_shot_counter = 0
 
                         ai_shot_counter += 1
-                        if ai_shot_counter == 13:
+                        if ai_shot_counter == 9:
                             ai_prev_shell[1] = current_ship[0]
                             return
 
-                    else:
-                        if ai_shot_counter <= 16:  # Fire downwards
-                            bottom = used_letters[used_letters.index(ai_prev_shell[1][0]) + 1]
-                            newshot = bottom + ai_prev_shell[1][1]
-                            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, newshot)
-                            print(f"PREVSHELL: {ai_prev_shell[0]}, RIGHT: {newshot}, Status: {ai_prev_shell[2]}")
+                    except IndexError:
+                        print("Algorithm went out of grid, Resetting...")
+                        ai_shot_counter = 9
+                        ai_prev_shell[1] = current_ship[0]
+
+                else:
+                    # Fire upwards until a shot misses, should it exit the grid it will return to it's originial hit. #
+                    if ai_shot_counter <= 12:  # Fire above
+                        try:
+                            top = used_letters[used_letters.index(ai_prev_shell[1][0]) - 1]
+                            newshot = top + ai_prev_shell[1][1]
+                            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                            print(f"PREVSHELL: {ai_prev_shell[0]}, ABOVE: {newshot}, Status: {ai_prev_shell[2]}")
 
                             if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
-                                current_ship.append(ai_prev_shell[1])
+                                ai_shots_missed.append(ai_prev_shell[1])
                             elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
                                 ai_shots_missed.append(ai_prev_shell[1])
-                                ai_shot_counter = 16
+                                ai_shot_counter = 12
                             elif ai_prev_shell[0] == '':
-                                ai_shot_counter = 16
+                                ai_shot_counter = 12
 
                             if ai_prev_shell[2] == 'foundered':
                                 current_ship = []
                                 ai_shot_counter = 0
 
                             ai_shot_counter += 1
-                            if ai_shot_counter == 17:
+                            if ai_shot_counter == 13:
                                 ai_prev_shell[1] = current_ship[0]
                                 return
+
+                        except IndexError:
+                            print("Algorithm went out of grid, Resetting...")
+                            ai_shot_counter = 13
+                            ai_prev_shell[1] = current_ship[0]
+
+                    else:
+                        # Fire downwards until a shot misses, should it exit the grid it will return to it's originial hit. #
+                        if ai_shot_counter <= 16:
+                            try:
+                                bottom = used_letters[used_letters.index(ai_prev_shell[1][0]) + 1]
+                                newshot = bottom + ai_prev_shell[1][1]
+                                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                                print(f"PREVSHELL: {ai_prev_shell[0]}, DOWN: {newshot}, Status: {ai_prev_shell[2]}")
+
+                                if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
+                                    ai_shots_missed.append(ai_prev_shell[1])
+                                elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
+                                    ai_shots_missed.append(ai_prev_shell[1])
+                                    ai_shot_counter = 16
+                                elif ai_prev_shell[0] == '':
+                                    ai_shot_counter = 16
+
+                                if ai_prev_shell[2] == 'foundered':
+                                    current_ship = []
+                                    ai_shot_counter = 0
+
+                                ai_shot_counter += 1
+                                if ai_shot_counter == 17:
+                                    ai_prev_shell[1] = current_ship[0]
+                                    return
+
+                            except IndexError:
+                                print("Algorithm went out of grid, Resetting...")
+                                ai_shot_counter = 17
+                                ai_prev_shell[1] = current_ship[0]
 
                         else:
                             current_ship = []
@@ -492,31 +493,30 @@ class ShowAIGame:
 
 
 
-
-
-    def fireAISequence(self, battlefield, ship_positions, ships_foundered, shot):
+    def fireAISequence(self, battlefield_pl, ship_positions_pl, shot):
         global ammo
+        global ships_foundered_pl
 
         result = ['','','']
         result[1] = shot
 
-        row, col = self.checkShellShot(battlefield, shot)
+        row, col = self.checkShellShot(battlefield_pl, shot)
 
-        if battlefield[row][col] == "_":
+        if battlefield_pl[row][col] == "_":
             result[0] = 'miss'
-            battlefield[row][col] = "#"
-        elif battlefield[row][col] == "#":
+            battlefield_pl[row][col] = "#"
+        elif battlefield_pl[row][col] == "#":
             result[0] = 'already_missed'
-            battlefield[row][col] = "#"
-        elif battlefield[row][col] == "X":
+            battlefield_pl[row][col] = "#"
+        elif battlefield_pl[row][col] == "X":
             result[0] = 'already_hit'
-            battlefield[row][col] = "X"
-        elif battlefield[row][col] == "0":
+            battlefield_pl[row][col] = "X"
+        elif battlefield_pl[row][col] == "0":
             result[0] = 'hit'
-            battlefield[row][col] = "X"
-            if self.checkShipFoundered(battlefield, ship_positions, row, col):
+            battlefield_pl[row][col] = "X"
+            if self.checkShipFoundered(battlefield_pl, ship_positions_pl, row, col):
                 result[2] = 'foundered'
-                ships_foundered += 1
+                ships_foundered_pl += 1
 
         ammo -= 1
         return result

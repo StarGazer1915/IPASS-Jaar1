@@ -25,6 +25,7 @@ battlefield_pl = [[]]
 battlefield_ai = [[]]
 ship_positions_pl = [[]]
 ship_positions_ai = [[]]
+ai_shots = []
 
 game_over = False
 row_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -43,8 +44,10 @@ class ShowAIGame:
 
         global ships_foundered_pl
         global ships_foundered_ai
+        global ai_shots
         ships_foundered_pl = 0
         ships_foundered_ai = 0
+        ai_shots = []
 
         self.loadJson()
         self.showSingleplayer()
@@ -314,7 +317,9 @@ class ShowAIGame:
 
         self.textdash.configure(state=NORMAL)
 
-        shot = random.choice(['A0','A1','A2','A3','A4','A5','A6','A7','A8','A9'])
+        shot = self.randomAlgorithm()
+
+        self.Algorithm()
 
         if shot != '' and game_over != True:
             self.fireSequence(battlefield_pl, ship_positions_pl, ships_foundered_pl, shot)
@@ -326,6 +331,17 @@ class ShowAIGame:
             self.textdash.insert(END, "That is not a valid coordinate, try again!")
 
         self.textdash.configure(state=DISABLED)
+
+
+    def randomAlgorithm(self):
+        global row_letters
+        global field_size
+
+        used_letters = row_letters[:field_size]
+
+        if not game_over:
+            newshot = random.choice(used_letters) + str(random.randint(0, field_size))
+            return newshot
 
 
     def Algorithm(self):
@@ -375,8 +391,10 @@ class ShowAIGame:
                 if foundered:
                     reset variables
 
+        json add future shot
         return "New Shot"
         """
+
 
 
     def insertText(self, dataname, battlefield):

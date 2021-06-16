@@ -1,9 +1,11 @@
 # ============ STUDENT ============ #
 #   Naam:       Justin Klein
-#   Klas:       V1B
 #   Nummer:     1707815
 #   Project:    IPASS
 # ================================= #
+
+# This file displays the initial window and setup windows.
+# It also handles the setup information and writes it to the JSON files.
 
 # ============ IMPORTS ============ #
 from tkinter import *
@@ -14,117 +16,153 @@ import json
 
 
 class ShowBoardGame:
-    # ======== Visuals ======== #
     bg = "#0033cc"
     fg = "#ffffff"
-    # ========================= #
 
     def __init__(self):
+        """
+        Runs the self.showDash() function when the class is called.
+        @return: void
+        """
         self.showDash()
 
     def showDash(self):
-        self.dashboard = Tk()
-        self.dashboard.title("Battleship")
-        self.dashboard.geometry("650x400")
-        self.dashboard.configure(background=self.bg)
-        self.dashboard.resizable(0, 0)
+        """
+        --- TKINTER FUNCTION ---
+        This function creates and runs the Dashboard window when called.
+        @return: void
+        """
+        self.DASHBOARD = Tk()
+        self.DASHBOARD.title("Battleship - Dashboard")
+        self.DASHBOARD.geometry("650x400")
+        self.DASHBOARD.configure(background=self.bg)
+        self.DASHBOARD.resizable(0, 0)
 
-        self.label1 = Label(self.dashboard, text="\nBATTLESHIP", font=("Arial 40 bold"))
-        self.label1.configure(background=self.bg, foreground=self.fg)
-        self.label1.pack()
+        self.DB_LABEL_1 = Label(self.DASHBOARD, text="\nBATTLESHIP", font=("Arial bold", 40))
+        self.DB_LABEL_1.configure(background=self.bg, foreground=self.fg)
+        self.DB_LABEL_1.pack()
 
-        self.label2 = Label(self.dashboard, text="The digital boardgame\n", font=("Arial 16 bold"))
-        self.label2.configure(background=self.bg, foreground=self.fg)
-        self.label2.pack()
+        self.DB_LABEL_2 = Label(self.DASHBOARD, text="The digital boardgame!\n", font=("Arial bold", 16))
+        self.DB_LABEL_2.configure(background=self.bg, foreground=self.fg)
+        self.DB_LABEL_2.pack()
 
-        self.label3 = Label(self.dashboard, text="====== Options: ======\n", font=("Arial 16 bold"))
-        self.label3.configure(background=self.bg, foreground=self.fg)
-        self.label3.pack()
+        self.DB_LABEL_3 = Label(self.DASHBOARD, text="====== Options: ======\n", font=("Arial bold", 16))
+        self.DB_LABEL_3.configure(background=self.bg, foreground=self.fg)
+        self.DB_LABEL_3.pack()
 
-        self.button = Button(self.dashboard, text="SINGLEPLAYER", font=("Arial bold", 14))
-        self.button.configure(height="2", width="28", command=self.showSPSetup, highlightbackground=self.bg, foreground=self.bg)
-        self.button.pack()
+        self.DB_BUTTON_1 = Button(self.DASHBOARD, text="SINGLEPLAYER", font=("Arial bold", 14))
+        self.DB_BUTTON_1.configure(height="2", width="28", command=self.showSPSetup, highlightbackground=self.bg, foreground=self.bg)
+        self.DB_BUTTON_1.pack()
 
-        self.button1 = Button(self.dashboard, text="PLAY AGAINST AI", font=("Arial bold", 14))
-        self.button1.configure(height="2", width="28", command=self.showAISetup, highlightbackground=self.bg, foreground=self.bg)
-        self.button1.pack()
+        self.DB_BUTTON_2 = Button(self.DASHBOARD, text="PLAY AGAINST AI", font=("Arial bold", 14))
+        self.DB_BUTTON_2.configure(height="2", width="28", command=self.showAISetup, highlightbackground=self.bg, foreground=self.bg)
+        self.DB_BUTTON_2.pack()
 
-        self.dashboard.mainloop()
+        self.DASHBOARD.mainloop()
 
 
     def invalidWindow(self):
-        self.invalidboard = Tk()
-        self.invalidboard.title("Invalid Entry")
-        self.invalidboard.geometry("350x200")
-        self.invalidboard.configure(background=self.bg)
-        self.invalidboard.resizable(0, 0)
+        """
+        --- TKINTER FUNCTION ---
+        This function creates and runs the 'invalid window' when called.
+        This window is usually used when an entry is invalid. It automatically
+        closes itself when the button is pressed.
 
-        self.label1 = Label(self.invalidboard, text="\nInvalid Entry", font=("Arial 20 bold"))
-        self.label1.configure(background=self.bg, foreground=self.fg)
-        self.label1.pack()
+        @return: void
+        """
+        self.INVALIDBOARD = Tk()
+        self.INVALIDBOARD.title("Invalid Entry")
+        self.INVALIDBOARD.geometry("350x200")
+        self.INVALIDBOARD.configure(background=self.bg)
+        self.INVALIDBOARD.resizable(0, 0)
 
-        self.label1 = Label(self.invalidboard, text="\nThis is not a valid entry!\nTry again.\n", font=("Arial 14 bold"))
-        self.label1.configure(background=self.bg, foreground=self.fg)
-        self.label1.pack()
+        self.INV_LABEL_1 = Label(self.INVALIDBOARD, text="\nInvalid Entry", font=("Arial bold", 20))
+        self.INV_LABEL_1.configure(background=self.bg, foreground=self.fg)
+        self.INV_LABEL_1.pack()
 
-        self.button = Button(self.invalidboard, text="Ok", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command=self.invalidboard.destroy, highlightbackground=self.bg, foreground=self.bg)
-        self.button.pack()
+        self.INV_LABEL_2 = Label(self.INVALIDBOARD, text="\nThis is not a valid entry!\n", font=("Arial bold", 14))
+        self.INV_LABEL_2.configure(background=self.bg, foreground=self.fg)
+        self.INV_LABEL_2.pack()
 
-        self.invalidboard.mainloop()
+        self.INV_BUTTON_1 = Button(self.INVALIDBOARD, text="Ok", font=("Arial bold", 14))
+        self.INV_BUTTON_1.configure(height="2", width="8", command=self.INVALIDBOARD.destroy, highlightbackground=self.bg, foreground=self.bg)
+        self.INV_BUTTON_1.pack()
+
+        self.INVALIDBOARD.mainloop()
 
 
     def showSPSetup(self):
-        self.setupboard = Tk()
-        self.setupboard.title("Battleship - Singleplayer Setup")
-        self.setupboard.geometry("350x350")
-        self.setupboard.configure(background=self.bg)
-        self.setupboard.resizable(0, 0)
+        """
+        --- TKINTER FUNCTION ---
+        This function creates and runs the setup window for the Singleplayer mode.
+        Information can be entered here that will be stored into a JSON file
+        using the setupSPCheck() function.
 
-        self.label1 = Label(self.setupboard, text="\nINSERT INFORMATION", font=("Arial 20 bold"))
-        self.label1.configure(background=self.bg, foreground=self.fg)
-        self.label1.pack()
+        @return: void
+        """
+        self.SETUPBOARD_SP = Tk()
+        self.SETUPBOARD_SP.title("Battleship - Singleplayer Setup")
+        self.SETUPBOARD_SP.geometry("350x350")
+        self.SETUPBOARD_SP.configure(background=self.bg)
+        self.SETUPBOARD_SP.resizable(0, 0)
 
-        self.whiteline = Label(self.setupboard, font=("Arial 10 bold"))
-        self.whiteline.configure(background=self.bg, foreground=self.fg)
-        self.whiteline.pack()
+        self.SP_LABEL_1 = Label(self.SETUPBOARD_SP, text="\nINSERT INFORMATION", font=("Arial bold", 20))
+        self.SP_LABEL_1.configure(background=self.bg, foreground=self.fg)
+        self.SP_LABEL_1.pack()
 
-        self.label2 = Label(self.setupboard, text="Battlefield size (10-26):", font=("Arial 14 bold"))
-        self.label2.configure(background=self.bg, foreground=self.fg)
-        self.label2.pack()
-        self.SizeEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.SizeEntry.configure(highlightbackground=self.bg)
-        self.SizeEntry.pack()
+        self.SP_WHITELINE_1 = Label(self.SETUPBOARD_SP, font=("Arial bold", 10))
+        self.SP_WHITELINE_1.configure(background=self.bg, foreground=self.fg)
+        self.SP_WHITELINE_1.pack()
 
-        self.label3 = Label(self.setupboard, text="\nAmount of ships (1-10):", font=("Arial 14 bold"))
-        self.label3.configure(background=self.bg, foreground=self.fg)
-        self.label3.pack()
-        self.ShipsEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.ShipsEntry.configure(highlightbackground=self.bg)
-        self.ShipsEntry.pack()
+        self.SP_LABEL_2 = Label(self.SETUPBOARD_SP, text="Battlefield size (10-26):", font=("Arial bold", 14))
+        self.SP_LABEL_2.configure(background=self.bg, foreground=self.fg)
+        self.SP_LABEL_2.pack()
 
-        self.label3 = Label(self.setupboard, text="\nAmount of shots:", font=("Arial 14 bold"))
-        self.label3.configure(background=self.bg, foreground=self.fg)
-        self.label3.pack()
-        self.AmmoEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.AmmoEntry.configure(highlightbackground=self.bg)
-        self.AmmoEntry.pack()
+        self.SP_SizeEntry = Entry(self.SETUPBOARD_SP, font=("Arial bold", 16))
+        self.SP_SizeEntry.configure(highlightbackground=self.bg)
+        self.SP_SizeEntry.pack()
 
-        self.whiteline3 = Label(self.setupboard, font=("Arial bold", 10))
-        self.whiteline3.configure(background=self.bg, foreground=self.fg)
-        self.whiteline3.pack()
+        self.SP_LABEL_3 = Label(self.SETUPBOARD_SP, text="\nAmount of ships (1-10):", font=("Arial bold", 14))
+        self.SP_LABEL_3.configure(background=self.bg, foreground=self.fg)
+        self.SP_LABEL_3.pack()
 
-        self.button = Button(self.setupboard, text="Start", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command=self.setupSPCheck, highlightbackground=self.bg, foreground=self.bg)
-        self.button.pack()
+        self.SP_ShipsEntry = Entry(self.SETUPBOARD_SP, font=("Arial bold", 16))
+        self.SP_ShipsEntry.configure(highlightbackground=self.bg)
+        self.SP_ShipsEntry.pack()
 
-        self.setupboard.mainloop()
+        self.SP_LABEL_4 = Label(self.SETUPBOARD_SP, text="\nAmount of shots:", font=("Arial bold", 14))
+        self.SP_LABEL_4.configure(background=self.bg, foreground=self.fg)
+        self.SP_LABEL_4.pack()
+
+        self.SP_AmmoEntry = Entry(self.SETUPBOARD_SP, font=("Arial bold", 16))
+        self.SP_AmmoEntry.configure(highlightbackground=self.bg)
+        self.SP_AmmoEntry.pack()
+
+        self.SP_WHITELINE_2 = Label(self.SETUPBOARD_SP, font=("Arial bold", 10))
+        self.SP_WHITELINE_2.configure(background=self.bg, foreground=self.fg)
+        self.SP_WHITELINE_2.pack()
+
+        self.SP_BUTTON_1 = Button(self.SETUPBOARD_SP, text="Start", font=("Arial bold", 14))
+        self.SP_BUTTON_1.configure(height="2", width="8", command=self.setupSPCheck, highlightbackground=self.bg, foreground=self.bg)
+        self.SP_BUTTON_1.pack()
+
+        self.SETUPBOARD_SP.mainloop()
 
 
     def setupSPCheck(self):
-        size = self.SizeEntry.get()
-        ships = self.ShipsEntry.get()
-        ammo = self.AmmoEntry.get()
+        """
+        Gets setupinformation from the Singleplayer setup window.
+        Checks if these values are not '' and if they are all integers. If not then
+        the invalid window is called and the user is asked to enter the information again.
+        If the entered info is acceptable it writes it to gui/SingleplayerGame.json (deleting
+        any previously stored data for re-playability) and starts the Singleplayer mode while
+        closing the setup window.
+
+        @return: void
+        """
+        size = self.SP_SizeEntry.get()
+        ships = self.SP_ShipsEntry.get()
+        ammo = self.SP_AmmoEntry.get()
         try:
             if size == '' or ships == '' or ammo == '':
                 self.invalidWindow()
@@ -141,67 +179,84 @@ class ShowBoardGame:
                     json.dump(data, file)
                     file.close()
 
-                self.setupboard.destroy()
+                self.SETUPBOARD_SP.destroy()
                 ShowSingleplayer()
 
-        except TypeError as error:
-            print(error)
+        except TypeError:
             self.invalidWindow()
         except ValueError:
             pass
 
 
     def showAISetup(self):
-        self.setupboard = Tk()
-        self.setupboard.title("Battleship - AI Setup")
-        self.setupboard.geometry("350x350")
-        self.setupboard.configure(background=self.bg)
-        self.setupboard.resizable(0, 0)
+        """
+        --- TKINTER FUNCTION ---
+        This function creates and runs the setup window for the Player VS AI mode.
+        Information can be entered here that will be stored into a JSON file
+        using the setupAICheck() function.
 
-        self.label1 = Label(self.setupboard, text="\nINSERT INFORMATION", font=("Arial 20 bold"))
-        self.label1.configure(background=self.bg, foreground=self.fg)
-        self.label1.pack()
+        @return: void
+        """
+        self.SETUPBOARD_AI = Tk()
+        self.SETUPBOARD_AI.title("Battleship - AI Setup")
+        self.SETUPBOARD_AI.geometry("350x350")
+        self.SETUPBOARD_AI.configure(background=self.bg)
+        self.SETUPBOARD_AI.resizable(0, 0)
 
-        self.whiteline = Label(self.setupboard, font=("Arial 10 bold"))
-        self.whiteline.configure(background=self.bg, foreground=self.fg)
-        self.whiteline.pack()
+        self.AI_LABEL_1 = Label(self.SETUPBOARD_AI, text="\nINSERT INFORMATION", font=("Arial bold", 20))
+        self.AI_LABEL_1.configure(background=self.bg, foreground=self.fg)
+        self.AI_LABEL_1.pack()
 
-        self.label2 = Label(self.setupboard, text="Battlefield size (10-26):", font=("Arial 14 bold"))
-        self.label2.configure(background=self.bg, foreground=self.fg)
-        self.label2.pack()
-        self.SizeEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.SizeEntry.configure(highlightbackground=self.bg)
-        self.SizeEntry.pack()
+        self.AI_WHITELINE_1 = Label(self.SETUPBOARD_AI, font=("Arial bold", 10))
+        self.AI_WHITELINE_1.configure(background=self.bg, foreground=self.fg)
+        self.AI_WHITELINE_1.pack()
 
-        self.label3 = Label(self.setupboard, text="\nAmount of ships (1-10):", font=("Arial 14 bold"))
-        self.label3.configure(background=self.bg, foreground=self.fg)
-        self.label3.pack()
-        self.ShipsEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.ShipsEntry.configure(highlightbackground=self.bg)
-        self.ShipsEntry.pack()
+        self.AI_LABEL_2 = Label(self.SETUPBOARD_AI, text="Battlefield size (10-26):", font=("Arial bold", 14))
+        self.AI_LABEL_2.configure(background=self.bg, foreground=self.fg)
+        self.AI_LABEL_2.pack()
 
-        self.label3 = Label(self.setupboard, text="\nAmount of shots:", font=("Arial 14 bold"))
-        self.label3.configure(background=self.bg, foreground=self.fg)
-        self.label3.pack()
-        self.AmmoEntry = Entry(self.setupboard, font=("Arial bold", 16))
-        self.AmmoEntry.configure(highlightbackground=self.bg)
-        self.AmmoEntry.pack()
+        self.AI_SizeEntry = Entry(self.SETUPBOARD_AI, font=("Arial bold", 16))
+        self.AI_SizeEntry.configure(highlightbackground=self.bg)
+        self.AI_SizeEntry.pack()
 
-        self.whiteline3 = Label(self.setupboard, font=("Arial bold", 10))
-        self.whiteline3.configure(background=self.bg, foreground=self.fg)
-        self.whiteline3.pack()
+        self.AI_LABEL_3 = Label(self.SETUPBOARD_AI, text="\nAmount of ships (1-10):", font=("Arial bold", 14))
+        self.AI_LABEL_3.configure(background=self.bg, foreground=self.fg)
+        self.AI_LABEL_3.pack()
 
-        self.button = Button(self.setupboard, text="Start", font=("Arial bold", 14))
-        self.button.configure(height="2", width="8", command=self.setupAICheck, highlightbackground=self.bg, foreground=self.bg)
-        self.button.pack()
+        self.AI_ShipsEntry = Entry(self.SETUPBOARD_AI, font=("Arial bold", 16))
+        self.AI_ShipsEntry.configure(highlightbackground=self.bg)
+        self.AI_ShipsEntry.pack()
 
-        self.setupboard.mainloop()
+        self.AI_LABEL_4 = Label(self.SETUPBOARD_AI, text="\nAmount of shots:", font=("Arial bold", 14))
+        self.AI_LABEL_4.configure(background=self.bg, foreground=self.fg)
+        self.AI_LABEL_4.pack()
+
+        self.AI_AmmoEntry = Entry(self.SETUPBOARD_AI, font=("Arial bold", 16))
+        self.AI_AmmoEntry.configure(highlightbackground=self.bg)
+        self.AI_AmmoEntry.pack()
+
+        self.AI_WHITELINE_2 = Label(self.SETUPBOARD_AI, font=("Arial bold", 10))
+        self.AI_WHITELINE_2.configure(background=self.bg, foreground=self.fg)
+        self.AI_WHITELINE_2.pack()
+
+        self.AI_BUTTON_1 = Button(self.SETUPBOARD_AI, text="Start", font=("Arial bold", 14))
+        self.AI_BUTTON_1.configure(height="2", width="8", command=self.setupAICheck, highlightbackground=self.bg, foreground=self.bg)
+        self.AI_BUTTON_1.pack()
+
+        self.SETUPBOARD_AI.mainloop()
 
 
     def setupAICheck(self):
-        size = self.SizeEntry.get()
-        ships = self.ShipsEntry.get()
-        ammo = self.AmmoEntry.get()
+        """
+        Gets setupinformation from the Player VS AI setup window.
+        Works exactly the same as the setupSPCheck() function. However, this
+        function starts the Player VS AI mode mode instead of the Singleplayer mode.
+
+        @return: void
+        """
+        size = self.AI_SizeEntry.get()
+        ships = self.AI_ShipsEntry.get()
+        ammo = self.AI_AmmoEntry.get()
         try:
             if size == '' or ships == '' or ammo == '':
                 self.invalidWindow()
@@ -218,11 +273,10 @@ class ShowBoardGame:
                     json.dump(data, file)
                     file.close()
 
-                self.setupboard.destroy()
+                self.SETUPBOARD_AI.destroy()
                 ShowAIGame()
 
-        except TypeError as error:
-            print(error)
+        except TypeError:
             self.invalidWindow()
         except ValueError:
             pass

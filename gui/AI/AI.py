@@ -49,10 +49,12 @@ class ShowAIGame:
         global ships_foundered_pl
         global ships_foundered_ai
         global current_ship
+        global ai_shots_missed
         global ai_shot_counter
         ships_foundered_pl = 0
         ships_foundered_ai = 0
         current_ship = []
+        ai_shots_missed = []
         ai_shot_counter = 0
 
         self.loadJson()
@@ -289,6 +291,7 @@ class ShowAIGame:
 
 
     def firePlayerShot(self):
+        global field_size
         global row_letters
         global battlefield_ai
         global ships_positions_ai
@@ -300,7 +303,13 @@ class ShowAIGame:
         shot = self.FireEntry.get().upper()
 
         if shot != '' and game_over != True:
-            if str(shot[0]) not in row_letters or str(shot[1]) in row_letters or len(shot) > 3 or len(shot) <= 1:
+
+            letters = re.compile(f'[{row_letters[:field_size]}]')
+            symbols = re.compile('[@_!#$%^&*()<>?/\|}{~:-]')
+
+            if symbols.search(shot) != None or letters.search(shot[1:]) != None or str(shot[0]) not in row_letters or str(shot[1]) in row_letters:
+                self.textdash.insert(END, "That is not a valid coordinate, try again!")
+            elif len(shot) > 3 or len(shot) <= 1 or int(shot[1:]) >= field_size:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
             else:
                 self.fireSequence(battlefield_ai, ship_positions_ai, ships_foundered_ai, shot)
@@ -308,6 +317,7 @@ class ShowAIGame:
                 self.checkIfGameOver()
                 self.fireAIShot()
                 self.checkIfGameOver()
+
         elif game_over:
             self.textdash.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
         else:
@@ -327,10 +337,6 @@ class ShowAIGame:
             self.AI(battlefield_pl, ship_positions_pl, ships_foundered_pl)
             self.jsonBattlefield({'battlefield_pl' : battlefield_pl})
             self.checkIfGameOver()
-        elif game_over:
-            print("The game has ended!\nClose the windows and play again\nfrom the main menu!")
-        else:
-            print("That is not a valid coordinate, try again!")
 
 
     def AI(self, battlefield_pl, ship_positions_pl, ships_foundered_pl):
@@ -344,8 +350,8 @@ class ShowAIGame:
 
         used_letters = row_letters[:field_size]
 
-        print(f"\n-- current_ship: {current_ship} | Ships foundered: {ships_foundered_pl} | Amount of ships: {amount_of_ships} --")
-        print(f"-- ai_shots_missed: {ai_shots_missed} --")
+        #print(f"\n-- current_ship: {current_ship} | Ships foundered: {ships_foundered_pl} | Amount of ships: {amount_of_ships} --")
+        #print(f"-- ai_shots_missed: {ai_shots_missed} --")
 
         if current_ship == []:
             while True:
@@ -356,6 +362,7 @@ class ShowAIGame:
             ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ai_shell)
             if ai_prev_shell[0] == 'hit':
                 current_ship.append(ai_prev_shell[1])
+                ai_shots_missed.append(ai_prev_shell[1])
             else:
                 ai_shots_missed.append(ai_prev_shell[1])
 
@@ -373,12 +380,10 @@ class ShowAIGame:
                     ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
                     print(f"PREVSHELL: {ai_prev_shell[0]}, LEFT: {newshot}, Status: {ai_prev_shell[2]}")
 
-                    if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
+                    if ai_prev_shell[0] in ['hit','already_hit']:
                         ai_shots_missed.append(ai_prev_shell[1])
-                    elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
+                    elif ai_prev_shell[0] in ['miss','already_miss','']:
                         ai_shots_missed.append(ai_prev_shell[1])
-                        ai_shot_counter = 4
-                    elif ai_prev_shell[0] == '':
                         ai_shot_counter = 4
 
                     if ai_prev_shell[2] == 'foundered':
@@ -390,8 +395,8 @@ class ShowAIGame:
                         ai_prev_shell[1] = current_ship[0]
                         return
 
-                except IndexError:
-                    print("Algorithm went out of grid. Resetting...")
+                except (IndexError, ValueError):
+                    print(f"Algorithm went out of grid. Resetting...")
                     ai_shot_counter = 5
                     ai_prev_shell[1] = current_ship[0]
 
@@ -403,12 +408,10 @@ class ShowAIGame:
                         ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
                         print(f"PREVSHELL: {ai_prev_shell[0]}, RIGHT: {newshot}, Status: {ai_prev_shell[2]}")
 
-                        if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
+                        if ai_prev_shell[0] in ['hit', 'already_hit']:
                             ai_shots_missed.append(ai_prev_shell[1])
-                        elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
+                        elif ai_prev_shell[0] in ['miss', 'already_miss', '']:
                             ai_shots_missed.append(ai_prev_shell[1])
-                            ai_shot_counter = 8
-                        elif ai_prev_shell[0] == '':
                             ai_shot_counter = 8
 
                         if ai_prev_shell[2] == 'foundered':
@@ -420,7 +423,7 @@ class ShowAIGame:
                             ai_prev_shell[1] = current_ship[0]
                             return
 
-                    except IndexError:
+                    except (IndexError, ValueError):
                         print("Algorithm went out of grid, Resetting...")
                         ai_shot_counter = 9
                         ai_prev_shell[1] = current_ship[0]
@@ -434,12 +437,10 @@ class ShowAIGame:
                             ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
                             print(f"PREVSHELL: {ai_prev_shell[0]}, ABOVE: {newshot}, Status: {ai_prev_shell[2]}")
 
-                            if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
+                            if ai_prev_shell[0] in ['hit', 'already_hit']:
                                 ai_shots_missed.append(ai_prev_shell[1])
-                            elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
+                            elif ai_prev_shell[0] in ['miss', 'already_miss', '']:
                                 ai_shots_missed.append(ai_prev_shell[1])
-                                ai_shot_counter = 12
-                            elif ai_prev_shell[0] == '':
                                 ai_shot_counter = 12
 
                             if ai_prev_shell[2] == 'foundered':
@@ -451,7 +452,7 @@ class ShowAIGame:
                                 ai_prev_shell[1] = current_ship[0]
                                 return
 
-                        except IndexError:
+                        except (IndexError, ValueError):
                             print("Algorithm went out of grid, Resetting...")
                             ai_shot_counter = 13
                             ai_prev_shell[1] = current_ship[0]
@@ -465,12 +466,10 @@ class ShowAIGame:
                                 ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
                                 print(f"PREVSHELL: {ai_prev_shell[0]}, DOWN: {newshot}, Status: {ai_prev_shell[2]}")
 
-                                if ai_prev_shell[0] == 'hit' or ai_prev_shell[0] == 'already_hit':
+                                if ai_prev_shell[0] in ['hit', 'already_hit']:
                                     ai_shots_missed.append(ai_prev_shell[1])
-                                elif ai_prev_shell[0] == 'miss' or ai_prev_shell[0] == 'already_miss':
+                                elif ai_prev_shell[0] in ['miss', 'already_miss', '']:
                                     ai_shots_missed.append(ai_prev_shell[1])
-                                    ai_shot_counter = 16
-                                elif ai_prev_shell[0] == '':
                                     ai_shot_counter = 16
 
                                 if ai_prev_shell[2] == 'foundered':
@@ -482,7 +481,7 @@ class ShowAIGame:
                                     ai_prev_shell[1] = current_ship[0]
                                     return
 
-                            except IndexError:
+                            except (IndexError, ValueError):
                                 print("Algorithm went out of grid, Resetting...")
                                 ai_shot_counter = 17
                                 ai_prev_shell[1] = current_ship[0]
@@ -518,9 +517,7 @@ class ShowAIGame:
                 result[2] = 'foundered'
                 ships_foundered_pl += 1
 
-        ammo -= 1
         return result
-
 
 
     def insertText(self, dataname, battlefield):

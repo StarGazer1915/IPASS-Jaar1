@@ -264,8 +264,8 @@ class ShowAIGame:
 
 
     def checkIfGameOver(self):
-        global ships_foundered_pl
         global ships_foundered_ai
+        global ships_foundered_pl
         global amount_of_ships
         global ammo
         global game_over
@@ -307,7 +307,9 @@ class ShowAIGame:
             letters = re.compile(f'[{row_letters[:field_size]}]')
             symbols = re.compile('[@_!#$%^&*()<>?/\|}{~:-]')
 
-            if symbols.search(shot) != None or letters.search(shot[1:]) != None or str(shot[0]) not in row_letters or str(shot[1]) in row_letters:
+            if symbols.search(shot) != None or letters.search(shot[1:]) != None:
+                self.textdash.insert(END, "That is not a valid coordinate, try again!")
+            elif str(shot[0]) not in row_letters or str(shot[1]) in row_letters:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
             elif len(shot) > 3 or len(shot) <= 1 or int(shot[1:]) >= field_size:
                 self.textdash.insert(END, "That is not a valid coordinate, try again!")
@@ -327,8 +329,6 @@ class ShowAIGame:
 
 
     def fireAIShot(self):
-        global ai_shell
-        global row_letters
         global battlefield_pl
         global ships_positions_pl
         global ships_foundered_pl

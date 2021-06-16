@@ -1,9 +1,11 @@
 # ============ STUDENT ============ #
 #   Naam:       Justin Klein
-#   Klas:       V1B
 #   Nummer:     1707815
 #   Project:    IPASS
 # ================================= #
+
+# This file creates and updates the grid window for the battleship game.
+# It can be opened by using the button (Show battlefield) in the singleplayer window.
 
 # ============ IMPORTS ============ #
 from tkinter import *
@@ -12,27 +14,44 @@ import json
 
 
 class ShowFieldWindow:
-    # ======== Visuals ======== #
     bg, fg = "#0033cc", "#ffffff"
     sea, hit = '#003399', '#ff0000'
-    # ========================= #
 
     def __init__(self):
+        """
+        Runs the self.showField() function when the class is called.
+        @return: void
+        """
         self.showField()
 
     def showField(self):
-        self.fieldboard = Tk()
-        self.fieldboard.title("Battleship - Field")
-        self.fieldboard.configure(background=self.bg)
-        self.fieldboard.resizable(0,0)
+        """
+        --- TKINTER FUNCTION ---
+        This function creates and runs the field window when called. It uses
+        the createField() function to place labels on a grid in the window and form the
+        battlefield. The update() function recreates/refreshes the labels in the window.
+
+        @return: void
+        """
+        self.GRIDBOARD = Tk()
+        self.GRIDBOARD.title("Battleship - Field")
+        self.GRIDBOARD.configure(background=self.bg)
+        self.GRIDBOARD.resizable(0, 0)
 
         self.createField()
         self.update()
 
-        self.fieldboard.mainloop()
+        self.GRIDBOARD.mainloop()
 
 
     def createField(self):
+        """
+        Fills the field window with labels and places them in a grid pattern. Based on
+        the battlefield that it gets from the JSON file it colors specific labels and
+        shows where shots hit and where they missed. (Blue = Sea/Missed, Red = Hit)
+
+        @return: void
+        """
         with open('gui/SingleplayerGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
@@ -40,47 +59,51 @@ class ShowFieldWindow:
             file.close()
 
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
         battlefield = []
-        i = 0
-        for r in field:
-            row = []
-            row.append(Label(self.fieldboard, text=f"{alphabet[i]}", font=("Arial", 10), height="2",
-                             width="5", background=self.bg, foreground=self.fg))
 
-            for char in r:
+        # Generated (colored)labels in and store them in a list. #
+        counter = 0
+        for line in field:
+            tmp_row = [Label(self.GRIDBOARD, text=f"{alphabet[counter]}", font=("Arial", 10),
+                             height="2", width="5", background=self.bg, foreground=self.fg)]
+            for char in line:
                 if char == '#':
-                    row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
-                                     relief=RAISED, background=self.sea, foreground=self.bg))
+                    tmp_row.append(Label(self.GRIDBOARD, font=("Arial", 10), height="2", width="5",
+                                         relief=RAISED, background=self.sea, foreground=self.bg))
                 elif char == 'X':
-                    row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
-                                     relief=RAISED, background=self.hit, foreground=self.bg))
+                    tmp_row.append(Label(self.GRIDBOARD, font=("Arial", 10), height="2", width="5",
+                                         relief=RAISED, background=self.hit, foreground=self.bg))
                 else:
-                    row.append(Label(self.fieldboard, font=("Arial", 10), height="2", width="5",
-                                     relief=RAISED, foreground=self.bg))
+                    tmp_row.append(Label(self.GRIDBOARD, font=("Arial", 10), height="2", width="5",
+                                         relief=RAISED, foreground=self.bg))
 
-            battlefield.append(row)
-            i += 1
+            battlefield.append(tmp_row)
+            counter += 1
 
-        row = []
-        row.append(Label(self.fieldboard, text=f"", font=("Arial", 10), height="2", width="5",
-                         background=self.bg, foreground=self.fg))
+        tmp_row = [Label(self.GRIDBOARD, text=f"", font=("Arial", 10), height="2", width="5",
+                         background=self.bg, foreground=self.fg)]
 
         for item in range(0,field_size):
-            row.append(Label(self.fieldboard, text=f"{item}", font=("Arial", 10), height="2", width="5",
-                             background=self.bg, foreground=self.fg))
+            tmp_row.append(Label(self.GRIDBOARD, text=f"{item}", font=("Arial", 10), height="2",
+                                 width="5", background=self.bg, foreground=self.fg))
 
-        battlefield.append(row)
+        battlefield.append(tmp_row)
 
+        # Place the generated labels in a grid pattern. #
         row = 0
-        for list in battlefield:
+        for line in battlefield:
             col = 0
-            for item in list:
-                item.grid(row=row, column=col, sticky=W)
+            for item in line:
+                item.grid(row=tmp_row, column=col, sticky=W)
                 col += 1
             row += 1
 
 
     def update(self):
+        """
+        Calls the createField() function every 5 seconds to update
+        the field and show where shots landed.
+        @return: void
+        """
         self.createField()
-        self.fieldboard.after(5000, self.update)
+        self.GRIDBOARD.after(5000, self.update)

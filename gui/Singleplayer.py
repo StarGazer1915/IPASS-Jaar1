@@ -36,8 +36,9 @@ class ShowSingleplayer:
         Runs immediately when the class is called.
         Sets global game_over and ships_foundered to false and zero so the game can be replayed
         and the entire program doesn't have to be re-run. Only the setup needs to be re-run
-        and the game windows need to be closed. Then it runs the loadJson() function to
-        get the setup information and showSingleplayer() function to start the game.
+        and the game windows need to be closed. Then it calls the loadJson() function to get
+        the setup information and then calls the showSingleplayer() function to start the game.
+
         @return: void
         """
         global game_over
@@ -232,7 +233,7 @@ class ShowSingleplayer:
 
     def fireShot(self):
         """
-        This function fires the shot on the battlefield. It get's the coordinate from
+        This function fires the shot on the battlefield. It gets the coordinate from
         the entry widget and checks if it's not emtpy and the game is not over. If the coordinate
         is not empty it checks if there are no symbols in the coordinate and if the coordinate
         is valid to be used on the battlefield. If it is valid it continues the process in other

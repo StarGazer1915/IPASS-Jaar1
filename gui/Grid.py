@@ -61,7 +61,6 @@ class ShowFieldWindow:
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         battlefield = []
 
-        # Generated (colored)labels in and store them in a list. #
         counter = 0
         for line in field:
             tmp_row = [Label(self.GRIDBOARD, text=f"{alphabet[counter]}", font=("Arial", 10),
@@ -83,13 +82,12 @@ class ShowFieldWindow:
         tmp_row = [Label(self.GRIDBOARD, text=f"", font=("Arial", 10), height="2", width="5",
                          background=self.bg, foreground=self.fg)]
 
-        for item in range(0,field_size):
+        for item in range(0, field_size):
             tmp_row.append(Label(self.GRIDBOARD, text=f"{item}", font=("Arial", 10), height="2",
                                  width="5", background=self.bg, foreground=self.fg))
 
         battlefield.append(tmp_row)
 
-        # Place the generated labels in a grid pattern. #
         row = 0
         for line in battlefield:
             col = 0

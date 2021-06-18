@@ -122,7 +122,7 @@ class ShowAIFieldWindows:
             for item in line:
                 item.grid(row=row, column=col, sticky=W)
                 col += 1
-            tmp_row += 1
+            row += 1
 
 
     def createAIField(self):
@@ -143,9 +143,9 @@ class ShowAIFieldWindows:
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         battlefield = []
 
-        counter = 0
+        ai_counter = 0
         for line in field:
-            tmp_row = [Label(self.AI_FIELDBOARD, text=f"{alphabet[counter]}", font=("Arial", 10), height="2",
+            tmp_row = [Label(self.AI_FIELDBOARD, text=f"{alphabet[ai_counter]}", font=("Arial", 10), height="2",
                              width="5", background=self.bg, foreground=self.fg)]
             for char in line:
                 if char == '#':
@@ -159,7 +159,7 @@ class ShowAIFieldWindows:
                                          relief=RAISED, foreground=self.bg))
 
             battlefield.append(tmp_row)
-            counter += 1
+            ai_counter += 1
 
         tmp_row = [Label(self.AI_FIELDBOARD, text=f"", font=("Arial", 10), height="2", width="5",
                          background=self.bg, foreground=self.fg)]
@@ -176,7 +176,7 @@ class ShowAIFieldWindows:
             for item in line:
                 item.grid(row=row, column=col, sticky=W)
                 col += 1
-            tmp_row += 1
+            row += 1
 
 
     def PlayerUpdate(self):

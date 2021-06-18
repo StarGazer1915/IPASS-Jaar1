@@ -92,7 +92,7 @@ class ShowFieldWindow:
         for line in battlefield:
             col = 0
             for item in line:
-                item.grid(row=tmp_row, column=col, sticky=W)
+                item.grid(row=row, column=col, sticky=W)
                 col += 1
             row += 1
 

@@ -19,16 +19,16 @@ class ShowFieldWindow:
 
     def __init__(self):
         """
-        Runs the self.showField() function when the class is called.
+        Runs the self.show_field() function when the class is called.
         @return: void
         """
-        self.showField()
+        self.show_field()
 
-    def showField(self):
+    def show_field(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the field window when called. It uses
-        the createField() function to place labels on a grid in the window and form the
+        the create_field() function to place labels on a grid in the window and form the
         battlefield. The update() function recreates/refreshes the labels in the window.
 
         @return: void
@@ -38,13 +38,13 @@ class ShowFieldWindow:
         self.GRIDBOARD.configure(background=self.bg)
         self.GRIDBOARD.resizable(0, 0)
 
-        self.createField()
+        self.create_field()
         self.update()
 
         self.GRIDBOARD.mainloop()
 
 
-    def createField(self):
+    def create_field(self):
         """
         Fills the field window with labels and places them in a grid pattern. Based on
         the battlefield that it gets from the JSON file it colors specific labels and
@@ -99,9 +99,9 @@ class ShowFieldWindow:
 
     def update(self):
         """
-        Calls the createField() function every 5 seconds to update
+        Calls the create_field() function every 5 seconds to update
         the field and show where shots landed.
         @return: void
         """
-        self.createField()
+        self.create_field()
         self.GRIDBOARD.after(5000, self.update)

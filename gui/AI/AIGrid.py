@@ -19,18 +19,18 @@ class ShowAIFieldWindows:
 
     def __init__(self):
         """
-        Runs the self.showPlayerField() function when the class is called.
+        Runs the self.show_player_field() function when the class is called.
         @return: void
         """
-        self.showPlayerField()
+        self.show_player_field()
 
-    def showPlayerField(self):
+    def show_player_field(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the player field window when called. It uses
-        the createPlayerField() function to place labels on a grid in the window and form the
-        battlefield. The PlayerUpdate() function recreates/refreshes the labels in the window.
-        It also calls the showAIField() function which simultaneously opens the field of the AI.
+        the create_player_field() function to place labels on a grid in the window and form the
+        battlefield. The player_update() function recreates/refreshes the labels in the window.
+        It also calls the show_ai_field() function which simultaneously opens the field of the AI.
 
         @return: void
         """
@@ -39,19 +39,19 @@ class ShowAIFieldWindows:
         self.PL_FIELDBOARD.configure(background=self.bg)
         self.PL_FIELDBOARD.resizable(0, 0)
 
-        self.createPlayerField()
-        self.PlayerUpdate()
-        self.showAIField()
+        self.create_player_field()
+        self.player_update()
+        self.show_ai_field()
 
         self.PL_FIELDBOARD.mainloop()
 
 
-    def showAIField(self):
+    def show_ai_field(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the AI field window when called. It uses
-        the createAIField() function to place labels on a grid in the window and form the
-        battlefield. The AIUpdate() function recreates/refreshes the labels in the window.
+        the create_ai_field() function to place labels on a grid in the window and form the
+        battlefield. The ai_update() function recreates/refreshes the labels in the window.
 
         @return: void
         """
@@ -60,13 +60,13 @@ class ShowAIFieldWindows:
         self.AI_FIELDBOARD.configure(background=self.bg)
         self.AI_FIELDBOARD.resizable(0, 0)
 
-        self.createAIField()
-        self.AIUpdate()
+        self.create_ai_field()
+        self.ai_update()
 
         self.AI_FIELDBOARD.mainloop()
 
 
-    def createPlayerField(self):
+    def create_player_field(self):
         """
         Fills the field window with labels and places them in a grid pattern. Based on
         the battlefield of the player that it gets from the JSON file it colors specific
@@ -125,7 +125,7 @@ class ShowAIFieldWindows:
             row += 1
 
 
-    def createAIField(self):
+    def create_ai_field(self):
         """
         Fills the field window with labels and places them in a grid pattern. Based on
         the battlefield of the AI that it gets from the JSON file it colors specific
@@ -179,21 +179,21 @@ class ShowAIFieldWindows:
             row += 1
 
 
-    def PlayerUpdate(self):
+    def player_update(self):
         """
-        Calls the createPlayerField() function every 5 seconds to update
+        Calls the create_player_field() function every 5 seconds to update
         the field and show where shots from the AI landed.
         @return: void
         """
-        self.createPlayerField()
-        self.PL_FIELDBOARD.after(5000, self.PlayerUpdate)
+        self.create_player_field()
+        self.PL_FIELDBOARD.after(5000, self.player_update)
 
 
-    def AIUpdate(self):
+    def ai_update(self):
         """
-        Calls the createAIField() function every 5 seconds to update
+        Calls the create_ai_field() function every 5 seconds to update
         the field and show where shots from the player landed.
         @return: void
         """
-        self.createAIField()
-        self.AI_FIELDBOARD.after(5000, self.AIUpdate)
+        self.create_ai_field()
+        self.AI_FIELDBOARD.after(5000, self.ai_update)

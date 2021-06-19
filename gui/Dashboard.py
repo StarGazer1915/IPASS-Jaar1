@@ -21,12 +21,12 @@ class ShowBoardGame:
 
     def __init__(self):
         """
-        Runs the self.showDash() function when the class is called.
+        Runs the self.show_dash() function when the class is called.
         @return: void
         """
-        self.showDash()
+        self.show_dash()
 
-    def showDash(self):
+    def show_dash(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the Dashboard window when called.
@@ -51,17 +51,17 @@ class ShowBoardGame:
         self.DB_LABEL_3.pack()
 
         self.DB_BUTTON_1 = Button(self.DASHBOARD, text="SINGLEPLAYER", font=("Arial bold", 14))
-        self.DB_BUTTON_1.configure(height="2", width="28", command=self.showSPSetup, highlightbackground=self.bg, foreground=self.bg)
+        self.DB_BUTTON_1.configure(height="2", width="28", command=self.show_sp_setup, highlightbackground=self.bg, foreground=self.bg)
         self.DB_BUTTON_1.pack()
 
         self.DB_BUTTON_2 = Button(self.DASHBOARD, text="PLAY AGAINST AI", font=("Arial bold", 14))
-        self.DB_BUTTON_2.configure(height="2", width="28", command=self.showAISetup, highlightbackground=self.bg, foreground=self.bg)
+        self.DB_BUTTON_2.configure(height="2", width="28", command=self.show_ai_setup, highlightbackground=self.bg, foreground=self.bg)
         self.DB_BUTTON_2.pack()
 
         self.DASHBOARD.mainloop()
 
 
-    def invalidWindow(self):
+    def invalid_window(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the 'invalid window' when called.
@@ -91,12 +91,12 @@ class ShowBoardGame:
         self.INVALIDBOARD.mainloop()
 
 
-    def showSPSetup(self):
+    def show_sp_setup(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the setup window for the Singleplayer mode.
         Information can be entered here that will be stored into a JSON file
-        using the setupSPCheck() function.
+        using the setup_sp_check() function.
 
         @return: void
         """
@@ -143,15 +143,15 @@ class ShowBoardGame:
         self.SP_WHITELINE_2.pack()
 
         self.SP_BUTTON_1 = Button(self.SETUPBOARD_SP, text="Start", font=("Arial bold", 14))
-        self.SP_BUTTON_1.configure(height="2", width="8", command=self.setupSPCheck, highlightbackground=self.bg, foreground=self.bg)
+        self.SP_BUTTON_1.configure(height="2", width="8", command=self.setup_sp_check, highlightbackground=self.bg, foreground=self.bg)
         self.SP_BUTTON_1.pack()
 
         self.SETUPBOARD_SP.mainloop()
 
 
-    def setupSPCheck(self):
+    def setup_sp_check(self):
         """
-        Gets setupinformation from the Singleplayer setup window.
+        Gets setup information from the Singleplayer setup window.
         Checks if these values are not '' and if they are all integers. If not then
         the invalid window is called and the user is asked to enter the information again.
         If the entered info is acceptable it writes it to gui/SingleplayerGame.json (deleting
@@ -165,11 +165,11 @@ class ShowBoardGame:
         ammo = self.SP_AmmoEntry.get()
         try:
             if size == '' or ships == '' or ammo == '':
-                self.invalidWindow()
+                self.invalid_window()
 
             size, ships, ammo = int(size), int(ships), int(ammo)
             if size > 26 or size < 10 or ships > 10 or ships <= 0 or ammo <= 0:
-                self.invalidWindow()
+                self.invalid_window()
             else:
                 data = {}
                 data['field_size'] = size
@@ -183,17 +183,17 @@ class ShowBoardGame:
                 ShowSingleplayer()
 
         except TypeError:
-            self.invalidWindow()
+            self.invalid_window()
         except ValueError:
             pass
 
 
-    def showAISetup(self):
+    def show_ai_setup(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the setup window for the Player VS AI mode.
         Information can be entered here that will be stored into a JSON file
-        using the setupAICheck() function.
+        using the setup_ai_check() function.
 
         @return: void
         """
@@ -240,16 +240,16 @@ class ShowBoardGame:
         self.AI_WHITELINE_2.pack()
 
         self.AI_BUTTON_1 = Button(self.SETUPBOARD_AI, text="Start", font=("Arial bold", 14))
-        self.AI_BUTTON_1.configure(height="2", width="8", command=self.setupAICheck, highlightbackground=self.bg, foreground=self.bg)
+        self.AI_BUTTON_1.configure(height="2", width="8", command=self.setup_ai_check, highlightbackground=self.bg, foreground=self.bg)
         self.AI_BUTTON_1.pack()
 
         self.SETUPBOARD_AI.mainloop()
 
 
-    def setupAICheck(self):
+    def setup_ai_check(self):
         """
-        Gets setupinformation from the Player VS AI setup window.
-        Works exactly the same as the setupSPCheck() function. However, this
+        Gets setup information from the Player VS AI setup window.
+        Works exactly the same as the setup_sp_check() function. However, this
         function starts the Player VS AI mode mode instead of the Singleplayer mode.
 
         @return: void
@@ -259,11 +259,11 @@ class ShowBoardGame:
         ammo = self.AI_AmmoEntry.get()
         try:
             if size == '' or ships == '' or ammo == '':
-                self.invalidWindow()
+                self.invalid_window()
 
             size, ships, ammo = int(size), int(ships), int(ammo)
             if size > 26 or size < 10 or ships > 10 or ships <= 0 or ammo <= 0:
-                self.invalidWindow()
+                self.invalid_window()
             else:
                 data = {}
                 data['field_size'] = size
@@ -277,6 +277,6 @@ class ShowBoardGame:
                 ShowAIGame()
 
         except TypeError:
-            self.invalidWindow()
+            self.invalid_window()
         except ValueError:
             pass

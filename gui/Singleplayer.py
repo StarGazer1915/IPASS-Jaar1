@@ -36,8 +36,8 @@ class ShowSingleplayer:
         Runs immediately when the class is called.
         Sets global game_over and ships_foundered to false and zero so the game can be replayed
         and the entire program doesn't have to be re-run. Only the setup needs to be re-run
-        and the game windows need to be closed. Then it calls the loadJson() function to get
-        the setup information and then calls the showSingleplayer() function to start the game.
+        and the game windows need to be closed. Then it calls the load_json() function to get
+        the setup information and then calls the show_singleplayer() function to start the game.
 
         @return: void
         """
@@ -47,11 +47,11 @@ class ShowSingleplayer:
         game_over = False
         ships_foundered = 0
 
-        self.loadJson()
-        self.showSingleplayer()
+        self.load_json()
+        self.show_singleplayer()
 
 
-    def showSingleplayer(self):
+    def show_singleplayer(self):
         """
         --- TKINTER FUNCTION ---
         This function creates and runs the Singleplayer window when called.
@@ -98,7 +98,7 @@ class ShowSingleplayer:
         self.SP_WHITELINE_3.pack()
 
         self.SP_FireButton = Button(self.SINGLEBOARD, text="Fire!", font=("Arial bold", 14))
-        self.SP_FireButton.configure(height="2", width="8", command=self.fireShot, highlightbackground=self.bg, foreground=self.bg)
+        self.SP_FireButton.configure(height="2", width="8", command=self.fire_shot, highlightbackground=self.bg, foreground=self.bg)
         self.SP_FireButton.pack()
 
         self.SP_WHITELINE_4 = Label(self.SINGLEBOARD, font=("Arial bold", 10))
@@ -115,19 +115,19 @@ class ShowSingleplayer:
         self.SP_TEXTDASH.tag_add("center", 1.0, "end")
         self.SP_TEXTDASH.pack()
 
-        self.createField()
-        self.jsonBattlefield({'battlefield': battlefield})
+        self.create_field()
+        self.json_battlefield({'battlefield': battlefield})
 
         self.SINGLEBOARD.mainloop()
 
 
-    def createField(self):
+    def create_field(self):
         """
         This function creates a battlefield with the size of field_size.
         It then places ships on the battlefield until it reaches the value of
         amount_of_ships that was extracted from the JSON file. When a ship is
         successfully placed on the battlefield it's coordinates are then added
-        to the ship_positions list. It uses the checkPlaceOnGrid() function to
+        to the ship_positions list. It uses the check_place_on_grid() function to
         see if a ship can be placed.
 
         @return: void
@@ -155,14 +155,14 @@ class ShowSingleplayer:
             random_col = random.randint(0, cols - 1)
             direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
             ship_size = random.randint(3, 5)
-            if self.checkPlaceOnGrid(random_row, random_col, direction, ship_size):
+            if self.check_place_on_grid(random_row, random_col, direction, ship_size):
                 ships_deployed += 1
 
 
-    def checkPlaceOnGrid(self, row, col, direction, length):
+    def check_place_on_grid(self, row, col, direction, length):
         """
         This function creates a position for a ship with it's parameters.
-        It then uses the checkFieldPlaceShip() function to see if it's
+        It then uses the check_field_place_ship() function to see if it's
         placement can be done.
 
         @param row: int
@@ -195,10 +195,10 @@ class ShowSingleplayer:
                 return False
             row_end = row + length
 
-        return self.checkFieldPlaceShip(row_start, row_end, col_start, col_end)
+        return self.check_field_place_ship(row_start, row_end, col_start, col_end)
 
 
-    def checkFieldPlaceShip(self, row_start, row_end, start_col, end_col):
+    def check_field_place_ship(self, row_start, row_end, start_col, end_col):
         """
         This function checks if the given position for a new ship placement
         is allowed/can be done. It looks at the positions and checks if the
@@ -231,7 +231,7 @@ class ShowSingleplayer:
         return positions_are_valid
 
 
-    def fireShot(self):
+    def fire_shot(self):
         """
         This function fires the shot on the battlefield. It gets the coordinate from
         the entry widget and checks if it's not emtpy and the game is not over. If the coordinate
@@ -268,9 +268,9 @@ class ShowSingleplayer:
             elif len(shot) > 3 or len(shot) <= 1 or int(shot[1:]) >= field_size:
                 self.SP_TEXTDASH.insert(END, "That is not a valid coordinate, try again!")
             else:
-                self.fireSequence(shot)
-                self.insertText()
-                self.checkIfGameOver()
+                self.fire_sequence(shot)
+                self.insert_text()
+                self.check_if_game_over()
 
         elif game_over:
             self.SP_TEXTDASH.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
@@ -280,7 +280,7 @@ class ShowSingleplayer:
         self.SP_TEXTDASH.configure(state=DISABLED)
 
 
-    def fireSequence(self, shot):
+    def fire_sequence(self, shot):
         """
         This function carries out the shooting. It takes the shot and checks
         where the user fired on the battlefield. If the user fires on a position
@@ -289,7 +289,7 @@ class ShowSingleplayer:
 
         When a shot was hit (or missed) it's symbol on the battlefield will change.
         When a ship was hit it will also check if the ship was foundered with
-        the checkShipFoundered() function.
+        the check_ship_foundered() function.
 
         @param shot: string
         @return: void
@@ -312,7 +312,7 @@ class ShowSingleplayer:
             elif battlefield[row][col] == "0":
                 self.SP_TEXTDASH.insert(END, f"You hit a ship!\n")
                 battlefield[row][col] = "X"
-                if self.checkShipFoundered(row, col):
+                if self.check_ship_foundered(row, col):
                     self.SP_TEXTDASH.insert(END, f"A ship was foundered!\n\n")
                     ships_foundered += 1
 
@@ -320,7 +320,7 @@ class ShowSingleplayer:
             ammo -= 1
 
 
-    def checkShipFoundered(self, row, col):
+    def check_ship_foundered(self, row, col):
         """
         Checks if the ship that was hit has been foundered and returns
         True if it has or False if it hasn't.
@@ -346,11 +346,11 @@ class ShowSingleplayer:
         return True
 
 
-    def insertText(self):
+    def insert_text(self):
         """
         Handles the extra information that is displayed in the text widget.
         The commented for loop can be uncommented to see the battlefield in real time. (List format)
-        After showing the information it runs the jsonBattlefield() function which updates the
+        After showing the information it runs the json_battlefield() function which updates the
         battlefield in the SingleplayerGame.json file.
 
         @return: void
@@ -364,15 +364,15 @@ class ShowSingleplayer:
         #     self.SP_TEXTDASH.insert(END, f"{i}\n")
 
         self.SP_TEXTDASH.configure(state=DISABLED)
-        self.jsonBattlefield({'battlefield': battlefield})
+        self.json_battlefield({'battlefield': battlefield})
 
 
-    def checkIfGameOver(self):
+    def check_if_game_over(self):
         """
         This functions checks various variables to see if the game is over and if
         the player has won. It checks if all ships were foundered or if the ammo has
         been depleted. If so, then the game_over variable will be changed to True and
-        the game will end in the fireShot() function.
+        the game will end in the fire_shot() function.
 
         @return: void
         """
@@ -396,10 +396,10 @@ class ShowSingleplayer:
             game_over = True
 
 
-    def jsonBattlefield(self, item):
+    def json_battlefield(self, item):
         """
         Simple function that updates 'item' in the JSON file. An example
-        of this is the battlefield that gets updated each time the insertText()
+        of this is the battlefield that gets updated each time the insert_text()
         function is called.
 
         @param item: dict
@@ -413,7 +413,7 @@ class ShowSingleplayer:
             file.close()
 
 
-    def loadJson(self):
+    def load_json(self):
         """
         This function reads the SingleplayerGame.json file to extract variables that
         have been set by the user in the setup window. It will then update the global

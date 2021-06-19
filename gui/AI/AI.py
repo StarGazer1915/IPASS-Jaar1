@@ -4,9 +4,9 @@
 #   Project:    IPASS
 # ================================= #
 
-# This file displays and runs the window for the Player VS AI mode.
+# This file displays and runs the window for the Player VS algorithm mode.
 # It also gets the setup information out of the JSON and uses it to
-# create two grids (player and AI) and play the game.
+# create two grids (player and algorithm) and play the game.
 
 # ============ IMPORTS ============ #
 from tkinter import *
@@ -45,8 +45,8 @@ class ShowAIGame:
         Runs immediately when the class is called.
         Sets global variables to false and zero so the game can be replayed and the entire program
         doesn't have to be re-run. Only the setup needs to be re-run and the game windows need to
-        be closed. Then it calls the loadJson() function to get the setup information and calls
-        the showAIvsPlayer() function to start the game.
+        be closed. Then it calls the load_json() function to get the setup information and calls
+        the show_ai_vs_player() function to start the game.
 
         @return: void
         """
@@ -64,18 +64,18 @@ class ShowAIGame:
         ai_shots_missed = []
         ai_shot_counter = 0
 
-        self.loadJson()
-        self.showAIvsPlayer()
+        self.load_json()
+        self.show_ai_vs_player()
 
 
-    def showAIvsPlayer(self):
+    def show_ai_vs_player(self):
         """
         --- TKINTER FUNCTION ---
-        This function creates and runs the Player VS AI window when called.
+        This function creates and runs the Player VS algorithm window when called.
         It has a button that calls the ShowAIFieldWindows class that creates two grids
         and has an entry widget for entering a coordinate. It has a button that
         starts the firing sequence with the entered coordinate, but unlike singleplayer
-        it now also starts the turn of the AI simultaneously. Finally it contains
+        it now also starts the turn of the algorithm simultaneously. Finally it contains
         a text widget that displays information of the game each time the fire
         button is pressed.
 
@@ -83,12 +83,12 @@ class ShowAIGame:
         """
 
         self.AIBOARD = Tk()
-        self.AIBOARD.title("Battleship - AI Game Board")
+        self.AIBOARD.title("Battleship - algorithm Game Board")
         self.AIBOARD.geometry("550x600")
         self.AIBOARD.configure(background=self.bg)
         self.AIBOARD.resizable(0, 0)
 
-        self.AIG_LABEL_1 = Label(self.AIBOARD, text="Player Versus AI", font=("Arial bold", 40))
+        self.AIG_LABEL_1 = Label(self.AIBOARD, text="Player Versus algorithm", font=("Arial bold", 40))
         self.AIG_LABEL_1.configure(background=self.bg, foreground=self.fg)
         self.AIG_LABEL_1.pack()
 
@@ -117,7 +117,7 @@ class ShowAIGame:
         self.AIG_WHITELINE_3.pack()
 
         self.AIG_FireButton = Button(self.AIBOARD, text="Fire!", font=("Arial bold", 14))
-        self.AIG_FireButton.configure(height="2", width="8", command=self.firePlayerShot, highlightbackground=self.bg, foreground=self.bg)
+        self.AIG_FireButton.configure(height="2", width="8", command=self.fire_player_shot, highlightbackground=self.bg, foreground=self.bg)
         self.AIG_FireButton.pack()
 
         self.AIG_WHITELINE_4 = Label(self.AIBOARD, font=("Arial bold", 10))
@@ -134,21 +134,21 @@ class ShowAIGame:
         self.AIG_TEXTDASH.tag_add("center", 1.0, "end")
         self.AIG_TEXTDASH.pack()
 
-        self.createFields()
-        self.jsonBattlefield({'battlefield_pl': battlefield_pl})
-        self.jsonBattlefield({'battlefield_ai': battlefield_ai})
+        self.create_fields()
+        self.json_battlefield({'battlefield_pl': battlefield_pl})
+        self.json_battlefield({'battlefield_ai': battlefield_ai})
 
         self.AIBOARD.mainloop()
 
 
-    def createFields(self):
+    def create_fields(self):
         """
         This function creates two battlefields with the size of field_size.
         It then places ships on the battlefields until it reaches the value of
         amount_of_ships that was extracted from the JSON file. Unlike the
         singleplayer variant this function has been split into multiple
         functions to accommodate the creation of multiple fields.
-        The functions makeField() and makeShipPositions() are
+        The functions make_field() and make_ship_positions() are
         used to accomplish this.
 
         @return: void
@@ -163,13 +163,13 @@ class ShowAIGame:
         rows, cols = field_size, field_size
         battlefield_pl, battlefield_ai = [], []
 
-        battlefield_pl = self.makeField(battlefield_pl, rows, cols)
-        battlefield_ai = self.makeField(battlefield_ai, rows, cols)
-        ship_positions_pl = self.makeShipPositions(battlefield_pl, amount_of_ships, rows, cols)
-        ship_positions_ai = self.makeShipPositions(battlefield_ai, amount_of_ships, rows, cols)
+        battlefield_pl = self.make_field(battlefield_pl, rows, cols)
+        battlefield_ai = self.make_field(battlefield_ai, rows, cols)
+        ship_positions_pl = self.make_ship_positions(battlefield_pl, amount_of_ships, rows, cols)
+        ship_positions_ai = self.make_ship_positions(battlefield_ai, amount_of_ships, rows, cols)
 
 
-    def makeField(self, battlefield, rows, cols):
+    def make_field(self, battlefield, rows, cols):
         """
         This function creates the battlefield using the rows and
         columns and returns a two dimensional array.
@@ -188,12 +188,12 @@ class ShowAIGame:
         return battlefield
 
 
-    def makeShipPositions(self, battlefield, amount_of_ships, rows, cols):
+    def make_ship_positions(self, battlefield, amount_of_ships, rows, cols):
         """
         This function places ships on the battlefield until it reaches the value of
         amount_of_ships that was extracted from the JSON file. When a ship is
         successfully placed on the battlefield it's coordinates are then added
-        to the ship_positions list. It uses the checkPlaceOnGrid() function to
+        to the ship_positions list. It uses the check_place_on_grid() function to
         see if a ship can be placed.
 
         @param battlefield: list
@@ -210,7 +210,7 @@ class ShowAIGame:
             random_col = random.randint(0, cols - 1)
             direction = random.choice(["LEFT", "RIGHT", "UP", "DOWN"])
             ship_size = random.randint(3, 5)
-            result = self.checkPlaceOnGrid(battlefield, ship_positions, random_row, random_col, direction, ship_size)
+            result = self.check_place_on_grid(battlefield, ship_positions, random_row, random_col, direction, ship_size)
             if not result:
                 pass
             elif len(result) > 1:
@@ -220,11 +220,11 @@ class ShowAIGame:
         return ship_positions
 
 
-    def checkPlaceOnGrid(self, battlefield, ship_positions, row, col, direction, length):
+    def check_place_on_grid(self, battlefield, ship_positions, row, col, direction, length):
         """
         This function works almost the same as the one used in singleplayer. This function
         has more variables however to support multiple grids. It creates a position for
-        a ship with it's parameters. It then uses the checkFieldPlaceShip() function to
+        a ship with it's parameters. It then uses the check_field_place_ship() function to
         see if it's placement can be done.
 
         @param battlefield: list
@@ -260,11 +260,11 @@ class ShowAIGame:
                 return False
             row_end = row + length
 
-        result = self.checkFieldPlaceShip(battlefield, ship_positions, row_start, row_end, col_start, col_end)
+        result = self.check_field_place_ship(battlefield, ship_positions, row_start, row_end, col_start, col_end)
         return [result[0], result[1]]
 
 
-    def checkFieldPlaceShip(self, battlefield, ship_positions, row_start, row_end, start_col, end_col):
+    def check_field_place_ship(self, battlefield, ship_positions, row_start, row_end, start_col, end_col):
         """
         This function also works almost identical to the singleplayer variant. It checks
         if the given position for a new ship placement is allowed/can be done. It looks at
@@ -298,22 +298,11 @@ class ShowAIGame:
         return [positions_are_valid, ship_positions]
 
 
-
-
-
-
-
-
-
-
-
-
-
-    def firePlayerShot(self):
+    def fire_player_shot(self):
         """
         Works practically the same as the fireShot() function in the singleplayer class.
-        This version however calls checkIfGameOver() twice. One after the player has fired
-        and one after the fireAIShot() function has been called. (AI has fired)
+        This version however calls check_if_game_over() twice. One after the player has fired
+        and one after the fire_ai_shot() function has been called. (algorithm has fired)
 
         *For detailed information see Singleplayer.py docstring of fireShot() function*
 
@@ -342,11 +331,11 @@ class ShowAIGame:
             elif len(shot) > 3 or len(shot) <= 1 or int(shot[1:]) >= field_size:
                 self.AIG_TEXTDASH.insert(END, "That is not a valid coordinate, try again!")
             else:
-                self.fireSequence(battlefield_ai, ship_positions_ai, ships_foundered_ai, shot)
-                self.insertText('battlefield_ai', battlefield_ai)
-                self.checkIfGameOver()
-                self.fireAIShot()
-                self.checkIfGameOver()
+                self.fire_sequence(battlefield_ai, ship_positions_ai, ships_foundered_ai, shot)
+                self.insert_text('battlefield_ai', battlefield_ai)
+                self.check_if_game_over()
+                self.fire_ai_shot()
+                self.check_if_game_over()
 
         elif game_over:
             self.AIG_TEXTDASH.insert(END, "The game has ended!\nClose the windows and play again\nfrom the main menu!")
@@ -356,12 +345,12 @@ class ShowAIGame:
         self.AIG_TEXTDASH.configure(state=DISABLED)
 
 
-    def fireSequence(self, battlefield, ship_positions, ships_foundered, shot):
+    def fire_sequence(self, battlefield, ship_positions, ships_foundered, shot):
         """
-        Works practically the same as the fireSequence() function in the singleplayer class.
+        Works practically the same as the fire_sequence() function in the singleplayer class.
         This version however uses parameters instead of globals.
 
-        *For detailed information see Singleplayer.py docstring of fireSequence() function*
+        *For detailed information see Singleplayer.py docstring of fire_sequence() function*
 
         @param battlefield: list
         @param ship_positions: list
@@ -385,7 +374,7 @@ class ShowAIGame:
             elif battlefield[row][col] == "0":
                 self.AIG_TEXTDASH.insert(END, f"You hit a ship!\n")
                 battlefield[row][col] = "X"
-                if self.checkShipFoundered(battlefield, ship_positions, row, col):
+                if self.check_ship_foundered(battlefield, ship_positions, row, col):
                     self.AIG_TEXTDASH.insert(END, f"A ship was foundered!\n\n")
                     ships_foundered += 1
 
@@ -393,7 +382,7 @@ class ShowAIGame:
             ammo -= 1
 
 
-    def checkShipFoundered(self, battlefield, ship_positions, row, col):
+    def check_ship_foundered(self, battlefield, ship_positions, row, col):
         """
         Checks if the ship that was hit has been foundered and returns
         True if it has or False if it hasn't.
@@ -418,11 +407,11 @@ class ShowAIGame:
         return True
 
 
-    def insertText(self, dataname, battlefield):
+    def insert_text(self, dataname, battlefield):
         """
         Handles the extra information that is displayed in the text widget.
         The commented for loop can be uncommented to see the battlefield in real time. (List format)
-        After showing the information it runs the jsonBattlefield() function which updates the
+        After showing the information it runs the json_battlefield() function which updates the
         battlefield in the AIGame.json file.
 
         @return: void
@@ -436,15 +425,15 @@ class ShowAIGame:
             self.AIG_TEXTDASH.insert(END, f"{i}\n")
 
         self.AIG_TEXTDASH.configure(state=DISABLED)
-        self.jsonBattlefield({dataname : battlefield})
+        self.json_battlefield({dataname : battlefield})
 
 
-    def checkIfGameOver(self):
+    def check_if_game_over(self):
         """
         This functions checks various variables to see if the game is over and if
-        the player or AI has won. It checks if all ships of either party were foundered
+        the player or algorithm has won. It checks if all ships of either party were foundered
         or if the ammo has been depleted. If so, then the game_over variable will be
-        changed to True and the game will end in the firePlayerShot() function.
+        changed to True and the game will end in the fire_player_shot() function.
 
         @return: void
         """
@@ -463,7 +452,7 @@ class ShowAIGame:
         elif amount_of_ships == ships_foundered_pl:
             self.AIG_TEXTDASH.configure(state=NORMAL)
             self.AIG_TEXTDASH.delete('1.0', END)
-            self.AIG_TEXTDASH.insert(END, "You lost the game!\nThe AI has sunk all your ships!")
+            self.AIG_TEXTDASH.insert(END, "You lost the game!\nThe algorithm has sunk all your ships!")
             self.AIG_TEXTDASH.configure(state=DISABLED)
             game_over = True
         elif ammo <= 0:
@@ -474,10 +463,10 @@ class ShowAIGame:
             game_over = True
 
 
-    def fireAIShot(self):
+    def fire_ai_shot(self):
         """
-        This is the AI equivalent of the firePlayerShot() function. However, this function
-        is significantly smaller because we don't need to check if the AI gives a valid
+        This is the algorithm equivalent of the fire_player_shot() function. However, this function
+        is significantly smaller because we don't need to check if the algorithm gives a valid
         coordinate.
 
         @return: void
@@ -486,22 +475,22 @@ class ShowAIGame:
         global ship_positions_pl
 
         if not game_over:
-            self.AI(battlefield_pl, ship_positions_pl)
-            self.jsonBattlefield({'battlefield_pl' : battlefield_pl})
-            self.checkIfGameOver()
+            self.algorithm(battlefield_pl, ship_positions_pl)
+            self.json_battlefield({'battlefield_pl' : battlefield_pl})
+            self.check_if_game_over()
 
 
-    def AI(self, battlefield_pl, ship_positions_pl):
+    def algorithm(self, battlefield_pl, ship_positions_pl):
         """
-        This is the AI function of the game. It follows the algorithm of the
+        This is the algorithm function of the game. It follows the algorithm of the
         shape S ⊂ Z^2 shape from the 'University Clermont Auvergne' in France.
 
         Source: https://pageperso.lis-lab.fr/guilherme.fonseca/battleship_conf.pdf
         (Page 5 is the algorithm that I implemented)
 
         --- HOW IT WORKS: ---
-        The AI shoots randomly like a human player possibly would until it hits a ship.
-        This first hit will be seen as the first position. The AI will then start firing
+        The algorithm shoots randomly like a human player possibly would until it hits a ship.
+        This first hit will be seen as the first position. The algorithm will then start firing
         more accurately around that location.
 
         When it hits a ship it will follow a pattern that shoots in several directions
@@ -520,7 +509,7 @@ class ShowAIGame:
         checks if it already fired at a specific location and if so, it chooses another coordinate
         before launching it's attack.
 
-        This function uses the fireAISequence() function to fire it's shots.
+        This function uses the fire_ai_sequence() function to fire it's shots.
 
         @param battlefield_pl: list
         @param ship_positions_pl: list
@@ -542,7 +531,7 @@ class ShowAIGame:
                 if ai_shell not in ai_shots_missed:
                     break
 
-            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, ai_shell)
+            ai_prev_shell = self.fire_ai_sequence(battlefield_pl, ship_positions_pl, ai_shell)
             if ai_prev_shell[0] == 'hit':
                 current_ship.append(ai_prev_shell[1])
                 ai_shots_missed.append(ai_prev_shell[1])
@@ -556,7 +545,7 @@ class ShowAIGame:
             if ai_shot_counter <= 4:
                 try:
                     newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) - 1)
-                    ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                    ai_prev_shell = self.fire_ai_sequence(battlefield_pl, ship_positions_pl, newshot)
 
                     if ai_prev_shell[0] in ['hit','already_hit']:
                         ai_shots_missed.append(ai_prev_shell[1])
@@ -583,7 +572,7 @@ class ShowAIGame:
                 if ai_shot_counter <= 8:
                     try:
                         newshot = ai_prev_shell[1][0] + str(int(ai_prev_shell[1][1]) + 1)
-                        ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                        ai_prev_shell = self.fire_ai_sequence(battlefield_pl, ship_positions_pl, newshot)
 
                         if ai_prev_shell[0] in ['hit', 'already_hit']:
                             ai_shots_missed.append(ai_prev_shell[1])
@@ -611,7 +600,7 @@ class ShowAIGame:
                         try:
                             top = used_letters[used_letters.index(ai_prev_shell[1][0]) - 1]
                             newshot = top + ai_prev_shell[1][1]
-                            ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                            ai_prev_shell = self.fire_ai_sequence(battlefield_pl, ship_positions_pl, newshot)
 
                             if ai_prev_shell[0] in ['hit', 'already_hit']:
                                 ai_shots_missed.append(ai_prev_shell[1])
@@ -639,7 +628,7 @@ class ShowAIGame:
                             try:
                                 bottom = used_letters[used_letters.index(ai_prev_shell[1][0]) + 1]
                                 newshot = bottom + ai_prev_shell[1][1]
-                                ai_prev_shell = self.fireAISequence(battlefield_pl, ship_positions_pl, newshot)
+                                ai_prev_shell = self.fire_ai_sequence(battlefield_pl, ship_positions_pl, newshot)
 
                                 if ai_prev_shell[0] in ['hit', 'already_hit']:
                                     ai_shots_missed.append(ai_prev_shell[1])
@@ -666,12 +655,12 @@ class ShowAIGame:
                             ai_shot_counter = 0
 
 
-    def fireAISequence(self, battlefield_pl, ship_positions_pl, shot):
+    def fire_ai_sequence(self, battlefield_pl, ship_positions_pl, shot):
         """
-        This function works practically the same as the fireSequence() function
-        for the player. This function however determines if the AI has already
+        This function works practically the same as the fire_sequence() function
+        for the player. This function however determines if the algorithm has already
         fired on a coordinate in a different way. It stores information in a
-        list (result) that it then gives back to the AI in a way the game would
+        list (result) that it then gives back to the algorithm in a way the game would
         to a human player. (It was a hit, a ship was foundered, etc.)
 
         @param battlefield_pl: list
@@ -700,23 +689,23 @@ class ShowAIGame:
         elif battlefield_pl[row][col] == "0":
             result[0] = 'hit'
             battlefield_pl[row][col] = "X"
-            if self.checkShipFoundered(battlefield_pl, ship_positions_pl, row, col):
+            if self.check_ship_foundered(battlefield_pl, ship_positions_pl, row, col):
                 result[2] = 'foundered'
                 ships_foundered_pl += 1
 
         return result
 
 
-    def jsonBattlefield(self, item):
+    def json_battlefield(self, item):
         """
         Simple function that updates 'item' in the JSON file. An example
-        of this is the battlefield that gets updated each time the insertText()
+        of this is the battlefield that gets updated each time the insert_text()
         function is called.
 
         @param item: dict
         @return: void
         """
-        with open('gui/AI/AIGame.json', 'r+') as file:
+        with open('gui/algorithm/AIGame.json', 'r+') as file:
             data = json.load(file)
             data.update(item)
             file.seek(0)
@@ -724,7 +713,7 @@ class ShowAIGame:
             file.close()
 
 
-    def loadJson(self):
+    def load_json(self):
         """
         This function reads the AIGame.json file to extract variables that
         have been set by the user in the setup window. It will then update the global
@@ -736,7 +725,7 @@ class ShowAIGame:
         global amount_of_ships
         global ammo
 
-        with open('gui/AI/AIGame.json', 'r') as file:
+        with open('gui/algorithm/AIGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
             amount_of_ships = data['amount_of_ships']

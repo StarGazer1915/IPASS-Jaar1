@@ -71,7 +71,7 @@ class ShowAIGame:
     def show_ai_vs_player(self):
         """
         --- TKINTER FUNCTION ---
-        This function creates and runs the Player VS algorithm window when called.
+        This function creates and runs the Player VS AI window when called.
         It has a button that calls the ShowAIFieldWindows class that creates two grids
         and has an entry widget for entering a coordinate. It has a button that
         starts the firing sequence with the entered coordinate, but unlike singleplayer
@@ -83,12 +83,12 @@ class ShowAIGame:
         """
 
         self.AIBOARD = Tk()
-        self.AIBOARD.title("Battleship - algorithm Game Board")
+        self.AIBOARD.title("Battleship - AI Game Board")
         self.AIBOARD.geometry("550x600")
         self.AIBOARD.configure(background=self.bg)
         self.AIBOARD.resizable(0, 0)
 
-        self.AIG_LABEL_1 = Label(self.AIBOARD, text="Player Versus algorithm", font=("Arial bold", 40))
+        self.AIG_LABEL_1 = Label(self.AIBOARD, text="Player Versus AI", font=("Arial bold", 40))
         self.AIG_LABEL_1.configure(background=self.bg, foreground=self.fg)
         self.AIG_LABEL_1.pack()
 
@@ -300,11 +300,11 @@ class ShowAIGame:
 
     def fire_player_shot(self):
         """
-        Works practically the same as the fireShot() function in the singleplayer class.
+        Works practically the same as the fire_shot() function in the singleplayer class.
         This version however calls check_if_game_over() twice. One after the player has fired
         and one after the fire_ai_shot() function has been called. (algorithm has fired)
 
-        *For detailed information see Singleplayer.py docstring of fireShot() function*
+        *For detailed information see Singleplayer.py docstring of fire_shot() function*
 
         @return: void
         """
@@ -705,7 +705,7 @@ class ShowAIGame:
         @param item: dict
         @return: void
         """
-        with open('gui/algorithm/AIGame.json', 'r+') as file:
+        with open('gui/AI/AIGame.json', 'r+') as file:
             data = json.load(file)
             data.update(item)
             file.seek(0)
@@ -725,7 +725,7 @@ class ShowAIGame:
         global amount_of_ships
         global ammo
 
-        with open('gui/algorithm/AIGame.json', 'r') as file:
+        with open('gui/AI/AIGame.json', 'r') as file:
             data = json.load(file)
             field_size = data['field_size']
             amount_of_ships = data['amount_of_ships']

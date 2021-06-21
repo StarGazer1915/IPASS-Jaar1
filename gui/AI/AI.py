@@ -421,8 +421,8 @@ class ShowAIGame:
         self.AIG_TEXTDASH.configure(state=NORMAL)
         self.AIG_TEXTDASH.insert(END, f"\nYou've got {ammo} rounds left!\n\n")
 
-        for i in battlefield:
-            self.AIG_TEXTDASH.insert(END, f"{i}\n")
+        # for i in battlefield:
+        #     self.AIG_TEXTDASH.insert(END, f"{i}\n")
 
         self.AIG_TEXTDASH.configure(state=DISABLED)
         self.json_battlefield({dataname : battlefield})
